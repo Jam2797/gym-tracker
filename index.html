@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GYM">
+<meta name="theme-color" content="#080808">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>GYM TRACKER</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Montserrat:wght@400;600;700&display=swap');
+:root{--bg:#080808;--s:#111;--c:#161616;--b:#252525;--him:#7c3aed;--himl:#a78bfa;--himd:#1e1030;--her:#db2777;--herl:#f472b6;--herd:#2d0a1a;--g:#10b981;--gd:#052e1c;--y:#f59e0b;--r:#ef4444;--t:#f0f0f0;--m:#555;--m2:#888;--ac:var(--him);--acl:var(--himl);--acd:var(--himd)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--t);font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;background:linear-gradient(135deg,var(--himl),var(--herl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.utabs{display:flex;gap:4px;background:var(--s);border-radius:10px;padding:4px}
+.utab{padding:5px 14px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;color:var(--m2);text-transform:uppercase;transition:all .2s}
+.utab.him.a{background:var(--him);color:#fff}.utab.her.a{background:var(--her);color:#fff}
+.page{display:none;padding:12px 14px 100px}.page.a{display:block}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid var(--b);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 2px;cursor:pointer;color:var(--m);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;gap:3px;transition:color .2s}
+.bni.a{color:var(--ac)}.bni svg{width:19px;height:19px}
+.sec{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--m2);margin:18px 0 10px}.sec:first-child{margin-top:4px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:10px}.cp{padding:14px}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:'DM Mono',monospace}
+.bg-him{background:var(--himd);color:var(--himl)}.bg-her{background:var(--herd);color:var(--herl)}
+.bg-g{background:var(--gd);color:#6ee7b7}.bg-y{background:#2a1800;color:#fbbf24}.bg-r{background:#2a0000;color:#f87171}.bg-x{background:#222;color:var(--m2)}
+.btn{width:100%;padding:11px;border-radius:9px;border:none;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity .2s}.btn:active{opacity:.7}
+.btn-him{background:var(--him);color:#fff}.btn-her{background:var(--her);color:#fff}.btn-grad{background:linear-gradient(135deg,var(--him),var(--her));color:#fff}
+.inp{background:var(--s);border:1px solid var(--b);border-radius:7px;color:var(--t);padding:8px 10px;font-size:14px;font-family:'DM Mono',monospace;outline:none;-webkit-appearance:none;width:100%;transition:border-color .2s}
+.inp:focus{border-color:var(--ac)}.lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--m);margin-bottom:3px;display:block}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.day-hdr{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer}
+.day-hdr.him-g{background:linear-gradient(90deg,var(--himd),transparent)}.day-hdr.her-g{background:linear-gradient(90deg,var(--herd),transparent)}
+.day-num{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;opacity:.28}
+.day-num.him{color:var(--himl)}.day-num.her{color:var(--herl)}
+.day-meta h3{font-size:14px;font-weight:700}.day-meta p{font-size:11px;color:var(--m2);margin-top:2px}
+.tog{margin-left:auto;width:26px;height:26px;border-radius:50%;background:var(--b);display:flex;align-items:center;justify-content:center;transition:transform .3s;flex-shrink:0}.tog svg{width:13px;height:13px}
+.open .tog{transform:rotate(180deg)}.day-body{display:none;padding:0 13px 13px}.open .day-body{display:block}
+.ex-block{margin-top:10px;border:1px solid var(--b);border-radius:10px;overflow:hidden}
+.ex-title{padding:8px 12px;font-size:11px;font-weight:700;background:#1e1e1e;display:flex;gap:6px;align-items:center}
+.ex-title.him{border-left:3px solid var(--him)}.ex-title.her{border-left:3px solid var(--her)}
+.ex-row{border-bottom:1px solid #181818;transition:background .15s}.ex-row:last-child{border-bottom:none}.ex-row:active{background:#1a1a1a}
+.ex-main{display:flex;align-items:center;padding:11px 12px;cursor:pointer;gap:9px}
+.ex-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.ex-ico.him{background:var(--himd)}.ex-ico.her{background:var(--herd)}
+.ex-info{flex:1;min-width:0}.ex-name{font-size:13px;font-weight:600}.ex-badges{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.ex-arr{width:17px;height:17px;flex-shrink:0;color:var(--m);transition:transform .3s,color .2s}
+.ex-open .ex-arr{transform:rotate(180deg);color:var(--ac)}
+.ex-detail{display:none;background:#0d0d0d;border-top:1px solid var(--b)}.ex-open .ex-detail{display:block}
+.ex-svg{padding:14px;text-align:center;background:#0a0a0a;border-bottom:1px solid var(--b)}
+.ex-tips{padding:10px 12px;border-bottom:1px solid var(--b)}
+.ex-tip{display:flex;gap:7px;padding:4px 0;font-size:12px;color:var(--m2);line-height:1.5}
+.ex-tip::before{content:"→";color:var(--ac);font-weight:700;flex-shrink:0}
+.ex-log{padding:11px 12px}
+.ex-restrict{padding:10px 12px;background:#1f1200;font-size:11px;color:#fbbf24;border-bottom:1px solid var(--b)}
+.sug{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace}
+.sug.g{background:var(--gd);color:#6ee7b7}.sug.y{background:#2a1800;color:#fbbf24}.sug.r{background:#2a0000;color:#f87171}.sug.n{background:#222;color:var(--m2)}
+.deload-banner{padding:11px 13px;background:#1a0f00;border-radius:10px;font-size:12px;color:#fbbf24;border-left:3px solid var(--y);margin-bottom:12px}
+.stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stat{background:var(--c);border:1px solid var(--b);border-radius:10px;padding:12px}
+.stat .v{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1}
+.stat .l{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--m);margin-bottom:4px}.stat .sub{font-size:10px;color:var(--m2);margin-top:2px}
+.v.him{color:var(--himl)}.v.her{color:var(--herl)}.v.g{color:var(--g)}
+.pb-item{margin-bottom:12px}.pb-hdr{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.pb-name{font-weight:600}.pb-val{color:var(--m2);font-family:'DM Mono',monospace}
+.pb{height:5px;background:var(--s);border-radius:99px;overflow:hidden}
+.pb-fill{height:100%;border-radius:99px;transition:width .8s}
+.pb-fill.him{background:linear-gradient(90deg,var(--him),var(--himl))}.pb-fill.her{background:linear-gradient(90deg,var(--her),var(--herl))}
+.ana-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--b);font-size:12px;color:var(--m2);line-height:1.5}
+.ana-item:last-child{border-bottom:none}.dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.dot.g{background:var(--g)}.dot.y{background:var(--y)}.dot.r{background:var(--r)}
+.mac3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px}
+.mac{background:var(--s);border-radius:8px;padding:9px;text-align:center}
+.mac .mv{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1}.mac .ml{font-size:9px;color:var(--m2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.meal-item{display:flex;justify-content:space-between;align-items:center;padding:6px 9px;background:var(--s);border-radius:7px;font-size:11px;gap:8px;margin-bottom:5px}
+.mi-n{flex:1;font-weight:600}.mi-del{color:var(--m);cursor:pointer;padding:2px 5px;font-size:15px}
+.water-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wbtn{padding:6px 12px;background:var(--s);border:1px solid var(--b);border-radius:7px;color:var(--t);font-size:12px;cursor:pointer;font-family:'DM Mono',monospace}.wbtn:active{background:var(--b)}
+.field-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.field-row label{font-size:12px;color:var(--m2);width:100px;flex-shrink:0}.field-row .inp{flex:1}
+.act-btn{width:100%;padding:11px 13px;background:var(--c);border:1px solid var(--b);border-radius:10px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;text-align:left}.act-btn:active{background:var(--s)}
+.act-ico{font-size:22px;flex-shrink:0}.act-name{font-size:13px;font-weight:700}.act-sub{font-size:11px;color:var(--m2);margin-top:1px}
+.act-log-form{background:var(--c);border:1px solid var(--b);border-radius:11px;padding:14px;margin-bottom:10px;display:none}
+.rest-ov{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--s);border:1px solid var(--b);border-radius:14px;padding:12px 20px;z-index:999;display:none;align-items:center;gap:14px;box-shadow:0 4px 30px rgba(0,0,0,.7)}
+.rest-ov.show{display:flex}.rt-n{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;transition:color .5s}
+.rt-lbl{font-size:9px;color:var(--m2);text-transform:uppercase;letter-spacing:1px}
+.rt-skip{padding:7px 13px;background:var(--b);border:none;border-radius:7px;color:var(--m2);font-size:11px;cursor:pointer}
+.toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--g);color:#fff;padding:8px 18px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:9999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+canvas{width:100%!important;display:block}
+.sel{width:100%;background:var(--s);border:1px solid var(--b);border-radius:7px;color:var(--t);padding:7px 10px;font-size:11px;outline:none;-webkit-appearance:none;font-family:'Montserrat',sans-serif;margin-bottom:11px}
+.phase-info{padding:10px 13px;background:var(--gd);border-radius:9px;font-size:12px;color:#6ee7b7;margin-bottom:12px;border-left:2px solid var(--g)}
+.injury-note{padding:10px 13px;background:#1f1200;border-radius:9px;font-size:12px;color:#fbbf24;border-left:3px solid var(--y);margin-bottom:12px}
+.sec-tabs{display:flex;gap:5px;margin-bottom:12px;background:var(--s);border-radius:9px;padding:3px}
+.sec-tab{flex:1;padding:7px;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;text-align:center;cursor:pointer;color:var(--m2);transition:all .2s}.sec-tab.a{background:var(--ac);color:#fff}
+.pane{display:none}.pane.a{display:block}
+.cycle-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--him),var(--her));color:#fff;margin-left:8px}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">GYM TRACKER</div>
+  <div class="utabs">
+    <div class="utab him a" onclick="switchUser('him')">ОН</div>
+    <div class="utab her" onclick="switchUser('her')">ОНА</div>
+  </div>
+</div>
+<div class="page a" id="pg-plan"></div>
+<div class="page" id="pg-prog"></div>
+<div class="page" id="pg-food"></div>
+<div class="page" id="pg-prof"></div>
+<div class="bnav">
+  <div class="bni a" onclick="gp('plan',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2h-2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>ПЛАН
+  </div>
+  <div class="bni" onclick="gp('prog',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>ПРОГРЕСС
+  </div>
+  <div class="bni" onclick="gp('food',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>ПИТАНИЕ
+  </div>
+  <div class="bni" onclick="gp('prof',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>ПРОФИЛЬ
+  </div>
+</div>
+<div class="rest-ov" id="restOv">
+  <div><div class="rt-lbl">Отдых</div><div class="rt-n" id="rtN">90</div></div>
+  <button class="rt-skip" onclick="stopRest()">Пропустить</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var SVGS = {
+  bench: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes b_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}.b_mv{animation:b_mv 2s ease-in-out infinite}.b_arr{animation:b_fa 2s ease-in-out infinite}@keyframes b_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="20" y="98" width="165" height="11" rx="4" fill="#2a2a2a"/> <rect x="38" y="109" width="9" height="28" rx="2" fill="#1e1e1e"/> <rect x="158" y="109" width="9" height="28" rx="2" fill="#1e1e1e"/> <ellipse cx="100" cy="92" rx="54" ry="8" fill="#3a3a3a"/> <circle cx="154" cy="88" r="10" fill="#444" stroke="#555" stroke-width="1"/> <g class="b_mv"> <line x1="82" y1="90" x2="74" y2="71" stroke="#999" stroke-width="5" stroke-linecap="round"/> <line x1="120" y1="90" x2="128" y2="71" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="48" y="63" width="108" height="9" rx="3" fill="#ccc"/> <rect x="40" y="59" width="15" height="17" rx="3" fill="#888"/> <rect x="149" y="59" width="15" height="17" rx="3" fill="#888"/> </g> <text class="b_arr" x="22" y="50" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text class="b_arr" x="22" y="78" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЖАТЬ ВЕРТИКАЛЬНО ВВЕРХ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">лопатки прижаты · таз на скамье</text> <text x="110" y="138" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">локти 45–75° · гриф касается груди</text> </svg>`,
+  squat: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes sq_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(22px)}}.sq_mv{animation:sq_mv 2.2s ease-in-out infinite}.sq_a{animation:sq_fa 2.2s ease-in-out infinite}@keyframes sq_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <line x1="110" y1="145" x2="85" y2="145" stroke="#333" stroke-width="3" stroke-linecap="round"/> <line x1="110" y1="145" x2="135" y2="145" stroke="#333" stroke-width="3" stroke-linecap="round"/> <g class="sq_mv"> <circle cx="110" cy="42" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="53" x2="110" y2="90" stroke="#555" stroke-width="7" stroke-linecap="round"/> <rect x="58" y="68" width="104" height="9" rx="3" fill="#ccc"/> <rect x="50" y="63" width="15" height="19" rx="3" fill="#888"/> <rect x="157" y="63" width="15" height="19" rx="3" fill="#888"/> <line x1="105" y1="90" x2="88" y2="120" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="90" x2="132" y2="120" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="88" y1="120" x2="85" y2="145" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="132" y1="120" x2="135" y2="145" stroke="#666" stroke-width="5" stroke-linecap="round"/> </g> <text class="sq_a" x="185" y="100" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text class="sq_a" x="185" y="60" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">СПИНА ПРЯМАЯ · САДИТЬСЯ ГЛУБОКО</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">колени по носкам · взгляд вперёд</text> </svg>`,
+  lat: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes lt_mv{0%,100%{transform:translateY(-18px)}50%{transform:translateY(0)}}.lt_mv{animation:lt_mv 2s ease-in-out infinite}.lt_a{animation:lt_fa 2s ease-in-out infinite}@keyframes lt_fa{0%,100%{opacity:1}50%{opacity:.3}}</style> <rect x="70" y="8" width="80" height="6" rx="3" fill="#444"/> <line x1="110" y1="14" x2="110" y2="32" stroke="#555" stroke-width="2" stroke-dasharray="3,3"/> <rect x="85" y="115" width="50" height="12" rx="4" fill="#2a2a2a"/> <rect x="95" y="127" width="12" height="28" rx="2" fill="#222"/> <circle cx="110" cy="85" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="96" x2="110" y2="115" stroke="#555" stroke-width="7" stroke-linecap="round"/> <g class="lt_mv"> <rect x="52" y="32" width="116" height="8" rx="3" fill="#ccc"/> <rect x="44" y="28" width="14" height="16" rx="3" fill="#888"/> <rect x="162" y="28" width="14" height="16" rx="3" fill="#888"/> <line x1="110" y1="96" x2="70" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> <line x1="110" y1="96" x2="150" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> </g> <text class="lt_a" x="30" y="75" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="150" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ТЯНУТЬ К ГРУДИ · ЛОПАТКИ ВНИЗ</text> <text x="110" y="16" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">локти ведут движение вниз</text> </svg>`,
+  row: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes rw_mv{0%,100%{transform:translateX(0)}50%{transform:translateX(18px)}}.rw_mv{animation:rw_mv 2s ease-in-out infinite}.rw_a{animation:rw_fa 2s ease-in-out infinite}@keyframes rw_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="8" y="70" width="18" height="55" rx="4" fill="#2a2a2a"/> <circle x="15" y="90" r="8" cx="17" cy="88" fill="#444"/> <line x1="17" y1="88" x2="55" y2="82" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/> <circle cx="130" cy="72" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="130" y1="83" x2="130" y2="110" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="125" y1="110" x2="108" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="135" y1="110" x2="152" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="108" y1="135" x2="108" y2="148" stroke="#555" stroke-width="3"/> <line x1="152" y1="135" x2="152" y2="148" stroke="#555" stroke-width="3"/> <g class="rw_mv"> <line x1="128" y1="88" x2="60" y2="88" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="40" y="81" width="24" height="14" rx="4" fill="#ccc"/> </g> <text class="rw_a" x="155" y="92" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">←</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ТЯНУТЬ К ПОЯСУ · ЛОПАТКИ ВМЕСТЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">спина прямая · корпус не качается</text> </svg>`,
+  rdl: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes rd_mv{0%,100%{transform:rotate(0deg) translateY(0)}50%{transform:rotate(12deg) translateY(8px)}}.rd_mv{animation:rd_mv 2.2s ease-in-out infinite;transform-origin:110px 100px}.rd_a{animation:rd_fa 2.2s ease-in-out infinite}@keyframes rd_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <line x1="95" y1="145" x2="90" y2="155" stroke="#444" stroke-width="4" stroke-linecap="round"/> <line x1="125" y1="145" x2="130" y2="155" stroke="#444" stroke-width="4" stroke-linecap="round"/> <g class="rd_mv"> <circle cx="110" cy="55" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="66" x2="110" y2="100" stroke="#555" stroke-width="8" stroke-linecap="round"/> <line x1="105" y1="100" x2="95" y2="128" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="100" x2="125" y2="128" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="95" y1="128" x2="90" y2="148" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="125" y1="128" x2="130" y2="148" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="90" y1="82" x2="65" y2="88" stroke="#999" stroke-width="4" stroke-linecap="round"/> <line x1="130" y1="82" x2="155" y2="88" stroke="#999" stroke-width="4" stroke-linecap="round"/> <rect x="50" y="82" width="120" height="8" rx="3" fill="#bbb"/> <rect x="40" y="78" width="14" height="16" rx="3" fill="#888"/> <rect x="166" y="78" width="14" height="16" rx="3" fill="#888"/> </g> <text class="rd_a" x="185" y="80" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↕</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ШАРНИР В БЕДРЕ · ГРИФ ПО НОГАМ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">спина прямая · чувствуй бицепс бедра</text> </svg>`,
+  dead: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes dl_mv{0%,100%{transform:translateY(30px) rotate(15deg)}50%{transform:translateY(0) rotate(0deg)}}.dl_mv{animation:dl_mv 2.5s ease-in-out infinite;transform-origin:110px 100px}.dl_a{animation:dl_fa 2.5s ease-in-out infinite}@keyframes dl_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="45" y="138" width="130" height="10" rx="3" fill="#bbb"/> <rect x="35" y="128" width="20" height="30" rx="4" fill="#888"/> <rect x="165" y="128" width="20" height="30" rx="4" fill="#888"/> <g class="dl_mv"> <circle cx="110" cy="60" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="71" x2="110" y2="100" stroke="#555" stroke-width="8" stroke-linecap="round"/> <line x1="105" y1="100" x2="92" y2="125" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="100" x2="128" y2="125" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="92" y1="125" x2="88" y2="148" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="128" y1="125" x2="132" y2="148" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="95" y1="85" x2="70" y2="98" stroke="#999" stroke-width="4" stroke-linecap="round"/> <line x1="125" y1="85" x2="150" y2="98" stroke="#999" stroke-width="4" stroke-linecap="round"/> </g> <text class="dl_a" x="20" y="100" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">СПИНА НЕЙТРАЛЬНАЯ · БЁДРА ВНИЗ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">гриф у голени · мощный выдох вверх</text> </svg>`,
+  shpr: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes sp_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}.sp_mv{animation:sp_mv 2s ease-in-out infinite}.sp_a{animation:sp_fa 2s ease-in-out infinite}@keyframes sp_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="80" y="115" width="60" height="10" rx="3" fill="#2a2a2a"/> <rect x="90" y="125" width="10" height="30" rx="2" fill="#222"/> <rect x="120" y="125" width="10" height="30" rx="2" fill="#222"/> <circle cx="110" cy="78" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="89" x2="110" y2="116" stroke="#555" stroke-width="7" stroke-linecap="round"/> <g class="sp_mv"> <line x1="110" y1="94" x2="78" y2="92" stroke="#999" stroke-width="5" stroke-linecap="round"/> <line x1="110" y1="94" x2="142" y2="92" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="56" y="84" width="24" height="14" rx="4" fill="#ccc"/> <rect x="140" y="84" width="24" height="14" rx="4" fill="#ccc"/> </g> <text class="sp_a" x="190" y="72" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text class="sp_a" x="190" y="100" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЖАТЬ ОТ УРОВНЯ УШЕЙ ВВЕРХ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">не заводи за голову · поясница прямая</text> </svg>`,
+  bcurl: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes bc_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-60deg)}}.bc_mv{animation:bc_mv 1.8s ease-in-out infinite;transform-origin:90px 100px}.bc_mv2{animation:bc_mv 1.8s ease-in-out infinite 0.9s;transform-origin:130px 100px}.bc_a{animation:bc_fa 1.8s ease-in-out infinite}@keyframes bc_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <circle cx="110" cy="52" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="63" x2="110" y2="100" stroke="#555" stroke-width="8" stroke-linecap="round"/> <line x1="105" y1="100" x2="90" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="100" x2="130" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="90" y1="135" x2="88" y2="158" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="130" y1="135" x2="132" y2="158" stroke="#666" stroke-width="5" stroke-linecap="round"/> <g class="bc_mv"> <line x1="90" y1="100" x2="90" y2="130" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="78" y="128" width="24" height="10" rx="4" fill="#ccc"/> </g> <circle cx="90" cy="100" r="5" fill="#a78bfa" opacity="0.8"/> <circle cx="130" cy="100" r="5" fill="#a78bfa" opacity="0.8"/> <text class="bc_a" x="40" y="115" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЛОКТИ НЕПОДВИЖНЫ · ПОЛНАЯ АМПЛИТУДА</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">фиолетовые точки = локти не двигаются</text> </svg>`,
+  lraise: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes lr_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-35deg)}}.lr_l{animation:lr_mv 2s ease-in-out infinite;transform-origin:82px 90px}.lr_r{animation:lr_mv 2s ease-in-out infinite;transform-origin:138px 90px;animation-direction:alternate}.lr_a{animation:lr_fa 2s ease-in-out infinite}@keyframes lr_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <circle cx="110" cy="58" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="69" x2="110" y2="100" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="104" y1="100" x2="90" y2="130" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="116" y1="100" x2="130" y2="130" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="90" y1="130" x2="88" y2="152" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="130" y1="130" x2="132" y2="152" stroke="#666" stroke-width="5" stroke-linecap="round"/> <g class="lr_l"> <line x1="82" y1="90" x2="40" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="24" y="83" width="18" height="11" rx="4" fill="#ccc"/> </g> <g class="lr_r"> <line x1="138" y1="90" x2="180" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="178" y="83" width="18" height="11" rx="4" fill="#ccc"/> </g> <text class="lr_a" x="16" y="65" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text class="lr_a" x="192" y="65" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <line x1="40" y1="90" x2="180" y2="90" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ДО УРОВНЯ ПЛЕЧ · НЕ ВЫШЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">мизинец чуть выше · медленно опускай</text> </svg>`,
+  gbr: `<svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="155" fill="#0a0a0a"/> <style>@keyframes gb_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}.gb_mv{animation:gb_mv 2s ease-in-out infinite}.gb_a{animation:gb_fa 2s ease-in-out infinite}@keyframes gb_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="10" y="138" width="200" height="6" rx="2" fill="#2a2a2a"/> <circle cx="50" cy="92" r="10" fill="#444" stroke="#555" stroke-width="1"/> <rect x="45" y="100" width="100" height="12" rx="4" fill="#3a3a3a"/> <g class="gb_mv"> <rect x="80" y="90" width="55" height="12" rx="5" fill="#3a3a3a"/> <rect x="78" y="82" width="59" height="12" rx="4" fill="#db2777" opacity="0.9"/> <line x1="100" y1="102" x2="88" y2="132" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="135" y1="102" x2="148" y2="132" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="88" y1="132" x2="82" y2="144" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="148" y1="132" x2="154" y2="144" stroke="#666" stroke-width="5" stroke-linecap="round"/> </g> <text class="gb_a" x="168" y="80" fill="#f472b6" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text class="gb_a" x="168" y="105" fill="#f472b6" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">СОЖМИ ЯГОДИЦЫ НАВЕРХУ 1–2 СЕК</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">стопы у ягодиц · поясница не прогибается</text> </svg>`,
+  hthrust: `<svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="155" fill="#0a0a0a"/> <style>@keyframes ht_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}.ht_mv{animation:ht_mv 2.2s ease-in-out infinite}.ht_a{animation:ht_fa 2.2s ease-in-out infinite}@keyframes ht_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="10" y="140" width="200" height="8" rx="3" fill="#2a2a2a"/> <rect x="8" y="100" width="14" height="40" rx="4" fill="#2a2a2a"/> <circle cx="40" cy="88" r="10" fill="#444" stroke="#555" stroke-width="1"/> <rect x="30" y="96" width="85" height="12" rx="4" fill="#444"/> <g class="ht_mv"> <rect x="80" y="88" width="60" height="12" rx="5" fill="#3a3a3a"/> <ellipse cx="110" cy="83" rx="30" ry="8" fill="#db2777" opacity="0.7"/> <rect x="85" y="75" width="50" height="12" rx="4" fill="#ccc"/> <rect x="74" y="70" width="18" height="22" rx="4" fill="#888"/> <rect x="128" y="70" width="18" height="22" rx="4" fill="#888"/> <line x1="105" y1="100" x2="88" y2="128" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="135" y1="100" x2="148" y2="128" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="88" y1="128" x2="84" y2="144" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="148" y1="128" x2="152" y2="144" stroke="#666" stroke-width="5" stroke-linecap="round"/> </g> <text class="ht_a" x="175" y="75" fill="#f472b6" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">БЁДРА ВВЕРХ · МАКСИМАЛЬНОЕ СЖАТИЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">верхняя часть спины на скамье</text> </svg>`,
+  kick: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes kk_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-35deg)}}.kk_mv{animation:kk_mv 2s ease-in-out infinite;transform-origin:105px 128px}.kk_a{animation:kk_fa 2s ease-in-out infinite}@keyframes kk_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="8" y="75" width="18" height="60" rx="4" fill="#2a2a2a"/> <circle cx="17" cy="95" r="7" fill="#444"/> <line x1="17" y1="95" x2="75" y2="115" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/> <circle cx="120" cy="65" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="120" y1="76" x2="112" y2="105" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="112" y1="105" x2="105" y2="128" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="105" y1="128" x2="102" y2="155" stroke="#666" stroke-width="5" stroke-linecap="round"/> <g class="kk_mv"> <line x1="105" y1="128" x2="145" y2="115" stroke="#db2777" stroke-width="5" stroke-linecap="round"/> <line x1="145" y1="115" x2="172" y2="105" stroke="#db2777" stroke-width="5" stroke-linecap="round"/> </g> <text class="kk_a" x="175" y="92" fill="#f472b6" font-size="13" font-family="monospace" font-weight="bold">←</text> <text x="110" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">НОГА СТРОГО НАЗАД · НЕ В СТОРОНУ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">не помогай корпусом · медленно назад</text> </svg>`,
+  plank: `<svg viewBox="0 0 220 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="140" fill="#0a0a0a"/> <style>@keyframes pl_mv{0%,100%{opacity:.3}50%{opacity:1}}.pl_a{animation:pl_mv 2s ease-in-out infinite}</style> <rect x="10" y="128" width="200" height="5" rx="2" fill="#2a2a2a"/> <circle cx="178" cy="82" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="178" y1="92" x2="45" y2="108" stroke="#555" stroke-width="9" stroke-linecap="round"/> <line x1="60" y1="106" x2="45" y2="128" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="145" y1="110" x2="130" y2="128" stroke="#666" stroke-width="6" stroke-linecap="round"/> <line x1="45" y1="108" x2="38" y2="128" stroke="#999" stroke-width="5" stroke-linecap="round"/> <line x1="178" y1="92" x2="195" y2="110" stroke="#999" stroke-width="5" stroke-linecap="round"/> <line x1="10" y1="92" x2="210" y2="108" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5,5" opacity="0.5"/> <text class="pl_a" x="108" y="62" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="monospace" font-weight="bold">— ПРЯМАЯ ЛИНИЯ —</text> <text x="110" y="18" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">НАПРЯГИ ПРЕСС И ЯГОДИЦЫ</text> <text x="110" y="30" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">таз не поднимать · не опускать · дыши</text> </svg>`,
+  donkey: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes dk_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-35deg)}}.dk_mv{animation:dk_mv 2s ease-in-out infinite;transform-origin:105px 120px}.dk_a{animation:dk_fa 2s ease-in-out infinite}@keyframes dk_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="10" y="152" width="200" height="5" rx="2" fill="#2a2a2a"/> <circle cx="90" cy="75" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="88" y1="85" x2="80" y2="108" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="55" y1="108" x2="48" y2="152" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="80" y1="108" x2="72" y2="152" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="80" y1="108" x2="105" y2="120" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="68" y1="88" x2="50" y2="112" stroke="#999" stroke-width="4" stroke-linecap="round"/> <line x1="68" y1="88" x2="88" y2="104" stroke="#999" stroke-width="4" stroke-linecap="round"/> <g class="dk_mv"> <line x1="105" y1="120" x2="155" y2="110" stroke="#db2777" stroke-width="5" stroke-linecap="round"/> <line x1="155" y1="110" x2="185" y2="98" stroke="#db2777" stroke-width="5" stroke-linecap="round"/> </g> <text class="dk_a" x="178" y="82" fill="#f472b6" font-size="12" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="18" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">НОГА НАЗАД И ВВЕРХ · СОЖМИ ЯГОДИЦУ</text> <text x="110" y="30" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">не поворачивай таз · медленно опускай</text> </svg>`,
+  sumo: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes sm_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}.sm_mv{animation:sm_mv 2.2s ease-in-out infinite}.sm_a{animation:sm_fa 2.2s ease-in-out infinite}@keyframes sm_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <line x1="55" y1="155" x2="165" y2="155" stroke="#333" stroke-width="2"/> <g class="sm_mv"> <circle cx="110" cy="50" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="61" x2="110" y2="90" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="105" y1="90" x2="72" y2="115" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="90" x2="148" y2="115" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="72" y1="115" x2="58" y2="155" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="148" y1="115" x2="162" y2="155" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="100" y1="75" x2="100" y2="95" stroke="#999" stroke-width="4" stroke-linecap="round"/> <rect x="88" y="93" width="24" height="14" rx="4" fill="#ccc"/> </g> <line x1="58" y1="130" x2="162" y2="130" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.6"/> <text x="28" y="135" fill="#f472b6" font-size="8" font-family="monospace">←широко→</text> <text class="sm_a" x="185" y="80" fill="#f472b6" font-size="14" font-family="monospace" font-weight="bold">↕</text> <text x="110" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">ШИРОКАЯ СТОЙКА · НОСКИ НАРУЖУ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">15+ повт = тонус без роста объёма</text> </svg>`,
+  crunch: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes cr_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-25deg)}}.cr_mv{animation:cr_mv 2s ease-in-out infinite;transform-origin:95px 95px}.cr_a{animation:cr_fa 2s ease-in-out infinite}@keyframes cr_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="10" y="140" width="200" height="5" rx="2" fill="#2a2a2a"/> <line x1="80" y1="115" x2="65" y2="140" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="110" y1="115" x2="125" y2="140" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="65" y1="140" x2="60" y2="155" stroke="#666" stroke-width="4" stroke-linecap="round"/> <line x1="125" y1="140" x2="130" y2="155" stroke="#666" stroke-width="4" stroke-linecap="round"/> <g class="cr_mv"> <line x1="95" y1="95" x2="80" y2="115" stroke="#555" stroke-width="7" stroke-linecap="round"/> <circle cx="95" cy="88" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="95" y1="85" x2="72" y2="75" stroke="#888" stroke-width="4" stroke-linecap="round"/> <line x1="95" y1="85" x2="118" y2="75" stroke="#888" stroke-width="4" stroke-linecap="round"/> </g> <ellipse cx="95" cy="115" rx="8" ry="4" fill="#f472b6" opacity="0.5"/> <text class="cr_a" x="148" y="80" fill="#f472b6" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">ПОЯСНИЦА НА ПОЛУ · СКРУЧИВАНИЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">не тяни голову руками · выдох вверх</text> </svg>`,
+  lcurl: `<svg viewBox="0 0 220 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="145" fill="#0a0a0a"/> <style>@keyframes lc_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-50deg)}}.lc_mv{animation:lc_mv 2s ease-in-out infinite;transform-origin:165px 86px}.lc_a{animation:lc_fa 2s ease-in-out infinite}@keyframes lc_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="30" y="80" width="160" height="12" rx="4" fill="#2a2a2a"/> <circle cx="62" cy="74" r="10" fill="#444" stroke="#555" stroke-width="1"/> <rect x="55" y="80" width="100" height="12" rx="4" fill="#3a3a3a"/> <line x1="125" y1="80" x2="165" y2="86" stroke="#666" stroke-width="5" stroke-linecap="round"/> <g class="lc_mv"> <line x1="165" y1="86" x2="185" y2="86" stroke="#db2777" stroke-width="5" stroke-linecap="round"/> <rect x="183" y="79" width="20" height="14" rx="4" fill="#ccc"/> </g> <circle cx="165" cy="86" r="4" fill="#f472b6" opacity="0.8"/> <text class="lc_a" x="168" y="60" fill="#f472b6" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="18" text-anchor="middle" fill="#f472b6" font-size="9" font-family="monospace" font-weight="bold">БЁДРА ПРИЖАТЫ · ЗАДЕРЖКА НАВЕРХУ</text> <text x="110" y="30" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">медленно опускай · полная амплитуда</text> </svg>`,
+  fpress: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes fp_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(50deg)}}.fp_l{animation:fp_mv 2s ease-in-out infinite;transform-origin:82px 92px}.fp_r{animation:fp_mv 2s ease-in-out infinite;transform-origin:138px 92px}.fp_a{animation:fp_fa 2s ease-in-out infinite}@keyframes fp_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="20" y="100" width="165" height="10" rx="4" fill="#2a2a2a"/> <rect x="38" y="110" width="9" height="28" rx="2" fill="#1e1e1e"/> <rect x="158" y="110" width="9" height="28" rx="2" fill="#1e1e1e"/> <ellipse cx="100" cy="94" rx="52" ry="8" fill="#3a3a3a"/> <circle cx="154" cy="90" r="10" fill="#444" stroke="#555" stroke-width="1"/> <circle cx="82" cy="92" r="4" fill="#a78bfa" opacity="0.8"/> <circle cx="138" cy="92" r="4" fill="#a78bfa" opacity="0.8"/> <g class="fp_l"> <line x1="82" y1="92" x2="72" y2="68" stroke="#999" stroke-width="5" stroke-linecap="round"/> </g> <g class="fp_r"> <line x1="138" y1="92" x2="148" y2="68" stroke="#999" stroke-width="5" stroke-linecap="round"/> </g> <rect x="60" y="60" width="90" height="8" rx="3" fill="#ccc"/> <rect x="50" y="56" width="14" height="16" rx="3" fill="#888"/> <rect x="150" y="56" width="14" height="16" rx="3" fill="#888"/> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЛОКТИ НЕПОДВИЖНО ВВЕРХ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">фиолет = локти не расходятся</text> </svg>`,
+  ctri: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes ct_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-30deg)}}.ct_l{animation:ct_mv 2s ease-in-out infinite;transform-origin:105px 110px}.ct_r{animation:ct_mv 2s ease-in-out infinite;transform-origin:115px 110px}.ct_a{animation:ct_fa 2s ease-in-out infinite}@keyframes ct_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="165" y="15" width="20" height="90" rx="5" fill="#2a2a2a"/> <circle cx="175" cy="32" r="8" fill="#444"/> <line x1="175" y1="40" x2="120" y2="80" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/> <circle cx="110" cy="62" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="72" x2="110" y2="105" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="104" y1="105" x2="90" y2="132" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="116" y1="105" x2="130" y2="132" stroke="#666" stroke-width="5" stroke-linecap="round"/> <circle cx="105" cy="110" r="4" fill="#a78bfa" opacity="0.8"/> <circle cx="115" cy="110" r="4" fill="#a78bfa" opacity="0.8"/> <g class="ct_l"> <line x1="105" y1="110" x2="90" y2="135" stroke="#aaa" stroke-width="5" stroke-linecap="round"/> <rect x="78" y="133" width="26" height="10" rx="4" fill="#ccc"/> </g> <text class="ct_a" x="18" y="128" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЛОКТИ У ТЕЛА · ПОЛНОЕ РАЗГИБАНИЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">фиолет = локти неподвижны</text> </svg>`,
+  lpress: `<svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="155" fill="#0a0a0a"/> <style>@keyframes lp_mv{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(-18px) translateY(8px)}}.lp_mv{animation:lp_mv 2s ease-in-out infinite}.lp_a{animation:lp_fa 2s ease-in-out infinite}@keyframes lp_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="135" y="98" width="72" height="45" rx="6" fill="#222"/> <rect x="155" y="70" width="52" height="30" rx="4" fill="#2a2a2a"/> <circle cx="155" cy="72" r="10" fill="#444" stroke="#555" stroke-width="1"/> <rect x="138" y="85" width="65" height="12" rx="3" fill="#3a3a3a"/> <g class="lp_mv"> <line x1="150" y1="95" x2="108" y2="72" stroke="#888" stroke-width="5" stroke-linecap="round"/> <line x1="148" y1="95" x2="105" y2="62" stroke="#888" stroke-width="5" stroke-linecap="round"/> <rect x="68" y="52" width="44" height="18" rx="4" fill="#bbb"/> <rect x="54" y="46" width="18" height="30" rx="4" fill="#888"/> </g> <text class="lp_a" x="30" y="68" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">→</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЖАТЬ · НЕ РАЗГИБАТЬ ДО КОНЦА</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">стопы чуть выше середины платформы</text> </svg>`,
+  cardio: `<svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="155" fill="#0a0a0a"/> <style>@keyframes cd_mv{0%,100%{transform:translateX(0)}25%{transform:translateX(5px) translateY(-4px)}75%{transform:translateX(-5px) translateY(-4px)}}.cd_mv{animation:cd_mv .6s ease-in-out infinite}.cd_p{animation:cd_fa 1s ease-in-out infinite}@keyframes cd_fa{0%,100%{opacity:.4}50%{opacity:1}}</style> <rect x="25" y="110" width="170" height="20" rx="5" fill="#1a2a1a"/> <rect x="30" y="105" width="160" height="9" rx="3" fill="#2a3a2a"/> <line x1="50" y1="105" x2="50" y2="65" stroke="#444" stroke-width="5" stroke-linecap="round"/> <line x1="170" y1="105" x2="170" y2="65" stroke="#444" stroke-width="5" stroke-linecap="round"/> <line x1="50" y1="65" x2="170" y2="65" stroke="#444" stroke-width="4" stroke-linecap="round"/> <rect x="88" y="55" width="44" height="28" rx="4" fill="#1a2a1a" stroke="#2a4a2a" stroke-width="1"/> <text x="110" y="74" text-anchor="middle" fill="#10b981" font-size="11" font-family="monospace">♥ 135</text> <g class="cd_mv"> <circle cx="110" cy="38" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="48" x2="110" y2="75" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="105" y1="75" x2="90" y2="92" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="75" x2="128" y2="90" stroke="#666" stroke-width="5" stroke-linecap="round"/> </g> <line class="cd_p" x1="30" y1="52" x2="50" y2="52" stroke="#10b981" stroke-width="2" opacity="0.6"/> <line class="cd_p" x1="25" y1="58" x2="48" y2="58" stroke="#10b981" stroke-width="1.5" opacity="0.4"/> <text x="110" y="16" text-anchor="middle" fill="#10b981" font-size="9" font-family="monospace" font-weight="bold">ПУЛЬС 120–140 · ТЕМП РАЗГОВОРНЫЙ</text> <text x="110" y="145" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">можешь говорить — значит темп правильный</text> </svg>`,
+  ipress: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes b_mv{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}.b_mv{animation:b_mv 2s ease-in-out infinite}.b_arr{animation:b_fa 2s ease-in-out infinite}@keyframes b_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="20" y="98" width="165" height="11" rx="4" fill="#2a2a2a"/> <rect x="38" y="109" width="9" height="28" rx="2" fill="#1e1e1e"/> <rect x="158" y="109" width="9" height="28" rx="2" fill="#1e1e1e"/> <ellipse cx="100" cy="92" rx="54" ry="8" fill="#3a3a3a"/> <circle cx="154" cy="88" r="10" fill="#444" stroke="#555" stroke-width="1"/> <g class="b_mv"> <line x1="82" y1="90" x2="74" y2="71" stroke="#999" stroke-width="5" stroke-linecap="round"/> <line x1="120" y1="90" x2="128" y2="71" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="48" y="63" width="108" height="9" rx="3" fill="#ccc"/> <rect x="40" y="59" width="15" height="17" rx="3" fill="#888"/> <rect x="149" y="59" width="15" height="17" rx="3" fill="#888"/> </g> <text class="b_arr" x="22" y="50" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↑</text> <text class="b_arr" x="22" y="78" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЖАТЬ ВЕРТИКАЛЬНО ВВЕРХ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">лопатки прижаты · таз на скамье</text> <text x="110" y="138" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">локти 45–75° · гриф касается груди</text> </svg>`,
+  fly: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes fl_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-28deg)}}.fl_l{animation:fl_mv 2.2s ease-in-out infinite;transform-origin:80px 90px}.fl_r{animation:fl_mv 2.2s ease-in-out infinite;transform-origin:140px 90px}.fl_a{animation:fl_fa 2.2s ease-in-out infinite}@keyframes fl_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="20" y="98" width="165" height="10" rx="4" fill="#2a2a2a"/> <rect x="38" y="108" width="9" height="28" rx="2" fill="#1e1e1e"/> <rect x="158" y="108" width="9" height="28" rx="2" fill="#1e1e1e"/> <ellipse cx="100" cy="93" rx="52" ry="8" fill="#3a3a3a"/> <circle cx="154" cy="89" r="10" fill="#444" stroke="#555" stroke-width="1"/> <g class="fl_l"> <line x1="80" y1="90" x2="40" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="24" y="83" width="18" height="13" rx="4" fill="#ccc"/> </g> <g class="fl_r"> <line x1="140" y1="90" x2="176" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="178" y="83" width="18" height="13" rx="4" fill="#ccc"/> </g> <text class="fl_a" x="12" y="68" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text class="fl_a" x="196" y="68" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ДУГА ВВЕРХ · ЛЁГКИЙ ИЗГИБ ЛОКТЕЙ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">чувствуй растяжение груди · до уровня плеч</text> </svg>`,
+  hammer: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes bc_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-60deg)}}.bc_mv{animation:bc_mv 1.8s ease-in-out infinite;transform-origin:90px 100px}.bc_mv2{animation:bc_mv 1.8s ease-in-out infinite 0.9s;transform-origin:130px 100px}.bc_a{animation:bc_fa 1.8s ease-in-out infinite}@keyframes bc_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <circle cx="110" cy="52" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="63" x2="110" y2="100" stroke="#555" stroke-width="8" stroke-linecap="round"/> <line x1="105" y1="100" x2="90" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="115" y1="100" x2="130" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="90" y1="135" x2="88" y2="158" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="130" y1="135" x2="132" y2="158" stroke="#666" stroke-width="5" stroke-linecap="round"/> <g class="bc_mv"> <line x1="90" y1="100" x2="90" y2="130" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="78" y="128" width="24" height="10" rx="4" fill="#ccc"/> </g> <circle cx="90" cy="100" r="5" fill="#a78bfa" opacity="0.8"/> <circle cx="130" cy="100" r="5" fill="#a78bfa" opacity="0.8"/> <text class="bc_a" x="40" y="115" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЛОКТИ НЕПОДВИЖНЫ · ПОЛНАЯ АМПЛИТУДА</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">фиолетовые точки = локти не двигаются</text> </svg>`,
+  pull: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes lt_mv{0%,100%{transform:translateY(-18px)}50%{transform:translateY(0)}}.lt_mv{animation:lt_mv 2s ease-in-out infinite}.lt_a{animation:lt_fa 2s ease-in-out infinite}@keyframes lt_fa{0%,100%{opacity:1}50%{opacity:.3}}</style> <rect x="70" y="8" width="80" height="6" rx="3" fill="#444"/> <line x1="110" y1="14" x2="110" y2="32" stroke="#555" stroke-width="2" stroke-dasharray="3,3"/> <rect x="85" y="115" width="50" height="12" rx="4" fill="#2a2a2a"/> <rect x="95" y="127" width="12" height="28" rx="2" fill="#222"/> <circle cx="110" cy="85" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="96" x2="110" y2="115" stroke="#555" stroke-width="7" stroke-linecap="round"/> <g class="lt_mv"> <rect x="52" y="32" width="116" height="8" rx="3" fill="#ccc"/> <rect x="44" y="28" width="14" height="16" rx="3" fill="#888"/> <rect x="162" y="28" width="14" height="16" rx="3" fill="#888"/> <line x1="110" y1="96" x2="70" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> <line x1="110" y1="96" x2="150" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> </g> <text class="lt_a" x="30" y="75" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="150" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ТЯНУТЬ К ГРУДИ · ЛОПАТКИ ВНИЗ</text> <text x="110" y="16" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">локти ведут движение вниз</text> </svg>`,
+  herfly: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes fl_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-28deg)}}.fl_l{animation:fl_mv 2.2s ease-in-out infinite;transform-origin:80px 90px}.fl_r{animation:fl_mv 2.2s ease-in-out infinite;transform-origin:140px 90px}.fl_a{animation:fl_fa 2.2s ease-in-out infinite}@keyframes fl_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="20" y="98" width="165" height="10" rx="4" fill="#2a2a2a"/> <rect x="38" y="108" width="9" height="28" rx="2" fill="#1e1e1e"/> <rect x="158" y="108" width="9" height="28" rx="2" fill="#1e1e1e"/> <ellipse cx="100" cy="93" rx="52" ry="8" fill="#3a3a3a"/> <circle cx="154" cy="89" r="10" fill="#444" stroke="#555" stroke-width="1"/> <g class="fl_l"> <line x1="80" y1="90" x2="40" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="24" y="83" width="18" height="13" rx="4" fill="#ccc"/> </g> <g class="fl_r"> <line x1="140" y1="90" x2="176" y2="90" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="178" y="83" width="18" height="13" rx="4" fill="#ccc"/> </g> <text class="fl_a" x="12" y="68" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text class="fl_a" x="196" y="68" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">↑</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ДУГА ВВЕРХ · ЛЁГКИЙ ИЗГИБ ЛОКТЕЙ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">чувствуй растяжение груди · до уровня плеч</text> </svg>`,
+  herlat: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="160" fill="#0a0a0a"/> <style>@keyframes lt_mv{0%,100%{transform:translateY(-18px)}50%{transform:translateY(0)}}.lt_mv{animation:lt_mv 2s ease-in-out infinite}.lt_a{animation:lt_fa 2s ease-in-out infinite}@keyframes lt_fa{0%,100%{opacity:1}50%{opacity:.3}}</style> <rect x="70" y="8" width="80" height="6" rx="3" fill="#444"/> <line x1="110" y1="14" x2="110" y2="32" stroke="#555" stroke-width="2" stroke-dasharray="3,3"/> <rect x="85" y="115" width="50" height="12" rx="4" fill="#2a2a2a"/> <rect x="95" y="127" width="12" height="28" rx="2" fill="#222"/> <circle cx="110" cy="85" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="96" x2="110" y2="115" stroke="#555" stroke-width="7" stroke-linecap="round"/> <g class="lt_mv"> <rect x="52" y="32" width="116" height="8" rx="3" fill="#ccc"/> <rect x="44" y="28" width="14" height="16" rx="3" fill="#888"/> <rect x="162" y="28" width="14" height="16" rx="3" fill="#888"/> <line x1="110" y1="96" x2="70" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> <line x1="110" y1="96" x2="150" y2="42" stroke="#888" stroke-width="5" stroke-linecap="round"/> </g> <text class="lt_a" x="30" y="75" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="150" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ТЯНУТЬ К ГРУДИ · ЛОПАТКИ ВНИЗ</text> <text x="110" y="16" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">локти ведут движение вниз</text> </svg>`,
+  herrow: `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="150" fill="#0a0a0a"/> <style>@keyframes rw_mv{0%,100%{transform:translateX(0)}50%{transform:translateX(18px)}}.rw_mv{animation:rw_mv 2s ease-in-out infinite}.rw_a{animation:rw_fa 2s ease-in-out infinite}@keyframes rw_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="8" y="70" width="18" height="55" rx="4" fill="#2a2a2a"/> <circle x="15" y="90" r="8" cx="17" cy="88" fill="#444"/> <line x1="17" y1="88" x2="55" y2="82" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/> <circle cx="130" cy="72" r="11" fill="#444" stroke="#555" stroke-width="1"/> <line x1="130" y1="83" x2="130" y2="110" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="125" y1="110" x2="108" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="135" y1="110" x2="152" y2="135" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="108" y1="135" x2="108" y2="148" stroke="#555" stroke-width="3"/> <line x1="152" y1="135" x2="152" y2="148" stroke="#555" stroke-width="3"/> <g class="rw_mv"> <line x1="128" y1="88" x2="60" y2="88" stroke="#999" stroke-width="5" stroke-linecap="round"/> <rect x="40" y="81" width="24" height="14" rx="4" fill="#ccc"/> </g> <text class="rw_a" x="155" y="92" fill="#a78bfa" font-size="13" font-family="monospace" font-weight="bold">←</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ТЯНУТЬ К ПОЯСУ · ЛОПАТКИ ВМЕСТЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">спина прямая · корпус не качается</text> </svg>`,
+  hertri: `<svg viewBox="0 0 220 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;border-radius:8px"> <rect width="220" height="165" fill="#0a0a0a"/> <style>@keyframes ct_mv{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-30deg)}}.ct_l{animation:ct_mv 2s ease-in-out infinite;transform-origin:105px 110px}.ct_r{animation:ct_mv 2s ease-in-out infinite;transform-origin:115px 110px}.ct_a{animation:ct_fa 2s ease-in-out infinite}@keyframes ct_fa{0%,100%{opacity:.3}50%{opacity:1}}</style> <rect x="165" y="15" width="20" height="90" rx="5" fill="#2a2a2a"/> <circle cx="175" cy="32" r="8" fill="#444"/> <line x1="175" y1="40" x2="120" y2="80" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/> <circle cx="110" cy="62" r="10" fill="#444" stroke="#555" stroke-width="1"/> <line x1="110" y1="72" x2="110" y2="105" stroke="#555" stroke-width="7" stroke-linecap="round"/> <line x1="104" y1="105" x2="90" y2="132" stroke="#666" stroke-width="5" stroke-linecap="round"/> <line x1="116" y1="105" x2="130" y2="132" stroke="#666" stroke-width="5" stroke-linecap="round"/> <circle cx="105" cy="110" r="4" fill="#a78bfa" opacity="0.8"/> <circle cx="115" cy="110" r="4" fill="#a78bfa" opacity="0.8"/> <g class="ct_l"> <line x1="105" y1="110" x2="90" y2="135" stroke="#aaa" stroke-width="5" stroke-linecap="round"/> <rect x="78" y="133" width="26" height="10" rx="4" fill="#ccc"/> </g> <text class="ct_a" x="18" y="128" fill="#a78bfa" font-size="14" font-family="monospace" font-weight="bold">↓</text> <text x="110" y="16" text-anchor="middle" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ЛОКТИ У ТЕЛА · ПОЛНОЕ РАЗГИБАНИЕ</text> <text x="110" y="28" text-anchor="middle" fill="#555" font-size="8" font-family="monospace">фиолет = локти неподвижны</text> </svg>`,
+};
+
+function getSVG(id) { return SVGS[id] || SVGS["cardio"] || ""; }
+
+var EX = {
+  bench:  {n:'Жим штанги лёжа',     ts:4,tr:10,dw:60, inc:2.5,icon:'🏋️',tips:['Лопатки сведены и прижаты','Локти 45–75° к телу','Штанга касается нижней груди','Не отрывай таз']},
+  ipress: {n:'Жим на наклонной',    ts:3,tr:10,dw:40, inc:2.5,icon:'🏋️',tips:['Наклон скамьи 30–45°','Акцент на верхнюю грудь']},
+  fly:    {n:'Разводка гантелей',   ts:3,tr:12,dw:12, inc:1,  icon:'🤲',tips:['Лёгкий изгиб локтей всё время','Опускай до уровня плеч','Чувствуй растяжение груди']},
+  fpress: {n:'Французский жим',     ts:3,tr:12,dw:18, inc:2.5,icon:'💪',tips:['Локти строго вверх, не расходятся','Только предплечья двигаются','Медленное опускание']},
+  ctri:   {n:'Разгибание на блоке', ts:3,tr:15,dw:20, inc:2.5,icon:'🔗',tips:['Локти прижаты к телу','Полное разгибание','Выдох на усилии']},
+  lat:    {n:'Тяга верхнего блока', ts:4,tr:10,dw:50, inc:2.5,icon:'⬇️',tips:['Тяни к груди, не за голову','Своди лопатки внизу','Локти ведут движение']},
+  row:    {n:'Горизонтальная тяга', ts:4,tr:10,dw:50, inc:2.5,icon:'↩️',tips:['Спина прямая','Тяни к поясу','Лопатки сводятся в конце']},
+  bcurl:  {n:'Подъём на бицепс',    ts:3,tr:12,dw:10, inc:1,  icon:'💪',tips:['Локти прижаты, неподвижны','Полная амплитуда','Не раскачивайся']},
+  hammer: {n:'Молоток',             ts:3,tr:12,dw:10, inc:1,  icon:'🔨',tips:['Нейтральный хват','Медленно опускай']},
+  squat:  {n:'Приседания со штангой',ts:4,tr:8,dw:50, inc:2.5,icon:'🏋️',tips:['2 лёгких подхода разминки','Спина прямая, взгляд вперёд','Колени по носкам','Садись глубоко']},
+  rdl:    {n:'Румынская тяга',      ts:4,tr:10,dw:40, inc:2.5,icon:'🏋️',tips:['Шарнир в бедре','Штанга скользит по ногам','Спина прямая']},
+  lpress: {n:'Жим ногами',          ts:4,tr:12,dw:80, inc:5,  icon:'🦵',tips:['Ступни чуть выше середины','Не разгибай до конца','Поясница прижата']},
+  lcurl:  {n:'Сгибание ног лёжа',   ts:3,tr:15,dw:20, inc:2.5,icon:'🦵',tips:['Бёдра прижаты','Задержка 1 сек']},
+  shpr:   {n:'Жим гантелей сидя',   ts:4,tr:12,dw:14, inc:2,  icon:'🏋️',tips:['Жми от ушей','Не за голову','Поясница не прогибается']},
+  lraise: {n:'Разводка в стороны',  ts:3,tr:15,dw:8,  inc:1,  icon:'↔️',tips:['До уровня плеч, не выше','Мизинец выше большого','Медленно опускай']},
+  dead:   {n:'Становая тяга',       ts:3,tr:5, dw:60, inc:5,  icon:'🏋️',tips:['Спина нейтральная','Гриф у голени','Бёдра вниз в старте']},
+  pull:   {n:'Подтягивания',        ts:3,tr:6, dw:0,  inc:0,  icon:'🤸',tips:['Полная амплитуда','Медленно опускай']},
+  gbr:    {n:'Ягодичный мост',      ts:4,tr:20,dw:10, inc:1,  icon:'🍑',tips:['Стопы у ягодиц','Сожми 1–2 сек наверху','Поясница не прогибается']},
+  kick:   {n:'Отведение ноги',      ts:3,tr:20,dw:7,  inc:1,  icon:'🍑',tips:['Нога строго назад','Не помогай корпусом','Медленное возвращение']},
+  hthrust:{n:'Hip Thrust',          ts:4,tr:15,dw:20, inc:2.5,icon:'🍑',tips:['Верхняя часть спины на скамье','Максимальное сжатие наверху']},
+  sumo:   {n:'Сумо-приседания',     ts:4,tr:15,dw:14, inc:1,  icon:'🦵',tips:['Широкая постановка','15+ повт = тонус без объёма']},
+  donkey: {n:'Махи ногой назад',    ts:3,tr:20,dw:0,  inc:0,  icon:'🍑',tips:['Нога назад и вверх','Не поворачивай таз']},
+  plank:  {n:'Планка',              ts:3,tr:40,dw:0,  inc:0,  isT:true,icon:'🧘',tips:['Прямая линия','Напряги пресс и ягодицы']},
+  herlat: {n:'Тяга блока (широкий)',ts:3,tr:15,dw:20, inc:2.5,icon:'⬇️',restrict:'clavicle',tips:['К груди, не за голову','⚠️ Дискомфорт в плече — стоп']},
+  herrow: {n:'Горизонтальная тяга', ts:3,tr:15,dw:20, inc:2.5,icon:'↩️',tips:['Безопасно для ключицы','Тяни к поясу']},
+  herfly: {n:'Разводка лёжа',       ts:3,tr:15,dw:5,  inc:0.5,restrict:'clavicle',icon:'🤲',tips:['Очень лёгкий вес','⚠️ Следи за ключицей']},
+  hertri: {n:'Разгибание рук',      ts:3,tr:15,dw:10, inc:2.5,icon:'🔗',tips:['Безопасно для ключицы','Локти у тела']},
+  crunch: {n:'Велосипед / скручивания',ts:3,tr:20,dw:0,inc:0,icon:'🧘',tips:['Поясница на полу','Не тяни голову руками']},
+  cardio: {n:'Кардио',              ts:1,tr:30,dw:0,  inc:0,  isT:true,icon:'🏃',tips:['Пульс 120–140','Темп — можешь говорить']}
+};
+
+var PHASES = {
+  him:[
+    {label:'Фаза 1',name:'База',sessions:[0,35],A:{title:'A — Грудь + Трицепс',ids:['bench','fly','fpress','ctri']},B:{title:'B — Спина + Бицепс',ids:['lat','row','bcurl','hammer']},C:{title:'C — Ноги + Плечи',ids:['lpress','lcurl','shpr','lraise']}},
+    {label:'Фаза 2',name:'Гипертрофия',sessions:[36,71],A:{title:'A — Грудь (тяжелее)',ids:['bench','ipress','fly','fpress','ctri']},B:{title:'B — Спина (тяжелее)',ids:['lat','row','bcurl','hammer']},C:{title:'C — Ноги (приседания)',ids:['squat','rdl','lcurl','shpr','lraise']}},
+    {label:'Фаза 3',name:'Сила 5×5',sessions:[72,107],A:{title:'A — Жим + Трицепс',ids:['bench','ipress','ctri','fly']},B:{title:'B — Тяга (тяжело)',ids:['dead','lat','row','bcurl']},C:{title:'C — Ноги + Плечи',ids:['squat','rdl','lcurl','shpr','lraise']}},
+    {label:'Фаза 4',name:'Новый цикл++',sessions:[108,143],A:{title:'A — Грудь + Трицепс',ids:['bench','ipress','fly','fpress','ctri']},B:{title:'B — Спина + Бицепс',ids:['dead','lat','row','pull','bcurl']},C:{title:'C — Ноги + Плечи',ids:['squat','rdl','lcurl','shpr','lraise']}},
+    {label:'Фаза 5',name:'Сила++',sessions:[144,9999],A:{title:'A — Жим (силовой)',ids:['bench','ipress','ctri','fly']},B:{title:'B — Тяга (силовая)',ids:['dead','lat','row','pull']},C:{title:'C — Ноги',ids:['squat','rdl','lcurl','lpress']}}
+  ],
+  her:[
+    {label:'Фаза 1',name:'База',sessions:[0,35],'1':{title:'День 1 — Ягодицы',ids:['gbr','kick','lcurl','donkey','plank']},'2':{title:'День 2 — Верх',ids:['herlat','herrow','herfly','hertri','crunch']},'3':{title:'День 3 — Кардио',ids:['cardio']}},
+    {label:'Фаза 2',name:'Тонус',sessions:[36,71],'1':{title:'День 1 — Ягодицы++',ids:['hthrust','gbr','kick','donkey','plank']},'2':{title:'День 2 — Верх + Кор',ids:['herlat','herrow','hertri','crunch']},'3':{title:'День 3 — HIIT + Низ',ids:['sumo','lcurl','cardio']}},
+    {label:'Фаза 3',name:'Поддержание',sessions:[72,107],'1':{title:'День 1 — Ягодицы (сила)',ids:['hthrust','gbr','kick','sumo','plank']},'2':{title:'День 2 — Верх',ids:['herlat','herrow','hertri','crunch']},'3':{title:'День 3 — Кардио',ids:['cardio']}},
+    {label:'Фаза 4',name:'Сила ягодиц',sessions:[108,9999],'1':{title:'День 1 — Ягодицы Макс',ids:['hthrust','gbr','kick','sumo','donkey']},'2':{title:'День 2 — Верх',ids:['herlat','herrow','hertri','crunch']},'3':{title:'День 3 — Кардио+',ids:['cardio']}}
+  ]
+};
+
+var HOME_ACTS=[
+  {id:'zumba',name:'Зумба',icon:'💃',cal:400,desc:'Танцевальная кардио'},
+  {id:'yoga',name:'Йога',icon:'🧘',cal:180,desc:'Гибкость и восстановление'},
+  {id:'pilates',name:'Пилатес',icon:'🌸',cal:250,desc:'Кор, осанка, тонус'},
+  {id:'hiit',name:'HIIT дома',icon:'⚡',cal:450,desc:'Интервалы без оборудования'},
+  {id:'walk',name:'Прогулка',icon:'🚶',cal:200,desc:'Лёгкая активность'},
+  {id:'swim',name:'Плавание',icon:'🏊',cal:400,desc:'Без нагрузки на суставы'},
+  {id:'bike',name:'Велосипед',icon:'🚴',cal:350,desc:'Кардио без ударной нагрузки'}
+];
+
+function getD(){try{var r=localStorage.getItem('gym_v5');return r?JSON.parse(r):{logs:{},profile:{him:{},her:{}},food:{},acts:[]};}catch(e){return{logs:{},profile:{him:{},her:{}},food:{},acts:[]};}}
+function setD(d){try{localStorage.setItem('gym_v5',JSON.stringify(d));}catch(e){}}
+function today(){return new Date().toISOString().slice(0,10);}
+function getLogs(user,exId){var d=getD(),k=user+'_'+exId;return (d.logs[k]||[]).slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);});}
+function addLog(user,exId,weight,reps,sets){var d=getD(),k=user+'_'+exId;if(!d.logs[k])d.logs[k]=[];d.logs[k].push({date:today(),weight:parseFloat(weight)||0,reps:parseInt(reps)||0,sets:parseInt(sets)||3});setD(d);}
+function delLog(user,exId,idx){var d=getD(),k=user+'_'+exId;if(d.logs[k]){d.logs[k].splice(idx,1);setD(d);}}
+
+function totalSessions(user){
+  var d=getD(),dates={},prefix=user+'_';
+  Object.keys(d.logs||{}).forEach(function(k){if(k.indexOf(prefix)!==0)return;(d.logs[k]||[]).forEach(function(l){dates[l.date]=1;});});
+  return Object.keys(dates).length;
+}
+function getPhaseIdx(user){
+  var n=totalSessions(user),phases=PHASES[user];
+  for(var i=0;i<phases.length;i++){if(n>=phases[i].sessions[0]&&n<=phases[i].sessions[1])return i;}
+  return phases.length-1;
+}
+function getPhase(user){return PHASES[user][getPhaseIdx(user)];}
+function getCycleNum(user){return Math.floor(getPhaseIdx(user)/3)+1;}
+
+// Days since last workout
+function daysSinceLast(user){
+  var d=getD(),prefix=user+'_',last='';
+  Object.keys(d.logs||{}).forEach(function(k){if(k.indexOf(prefix)!==0)return;(d.logs[k]||[]).forEach(function(l){if(l.date>last)last=l.date;});});
+  if(!last)return 0;
+  return Math.floor((Date.now()-new Date(last).getTime())/86400000);
+}
+// Deload factor based on rest days
+function deloadFactor(user){
+  var days=daysSinceLast(user);
+  if(days<=3)return{f:1.0,msg:null};
+  if(days<=6)return{f:0.9,msg:'Перерыв '+days+' дней → -10% к весу для разминки. Вернёшься быстро.'};
+  if(days<=13)return{f:0.8,msg:'Перерыв '+days+' дней → -20% к весу. Деload-неделя: восстанови технику.'};
+  return{f:0.7,msg:'Перерыв '+days+' дней → -30% к весу! Форма требует осторожного восстановления.'};
+}
+
+function getDayKeys(user){return user==='him'?['A','B','C']:['1','2','3'];}
+function getLastDayKey(user){
+  var d=getD(),prefix=user+'_',phase=getPhase(user),dayKeys=getDayKeys(user);
+  var latestByDay={};
+  dayKeys.forEach(function(dk){
+    var dayExs=((phase[dk])||{}).ids||[];
+    var latestForDay='';
+    dayExs.forEach(function(exId){var k=prefix+exId;(d.logs[k]||[]).forEach(function(l){if(l.date>latestForDay)latestForDay=l.date;});});
+    if(latestForDay)latestByDay[dk]=latestForDay;
+  });
+  var lastDate='',lastKey='';
+  Object.keys(latestByDay).forEach(function(dk){if(latestByDay[dk]>lastDate){lastDate=latestByDay[dk];lastKey=dk;}});
+  return lastKey;
+}
+function getNextDayKey(user){
+  var last=getLastDayKey(user),keys=getDayKeys(user);
+  if(!last)return keys[0];
+  var idx=keys.indexOf(last);
+  return keys[(idx+1)%keys.length];
+}
+
+function getSuggestion(user,exId){
+  var ex=EX[exId];if(!ex)return{w:0,label:'',cls:'n'};
+  var logs=getLogs(user,exId);
+  var dl=deloadFactor(user);
+  if(!logs.length){return{w:ex.dw,label:'Старт',cls:'n'};}
+  var last=logs[0];
+  var baseW;
+  if(last.sets>=ex.ts&&last.reps>=ex.tr){
+    var two=(logs.length>=2&&logs[1].sets>=ex.ts&&logs[1].reps>=ex.tr);
+    baseW=two?(last.weight+ex.inc):last.weight;
+    var lbl=two?('+'+ex.inc+'кг!'):('Ещё раз, потом +'+ex.inc);
+    var cls=two?'g':'y';
+    var finalW=Math.round(baseW*dl.f*2)/2;
+    if(dl.f<1)lbl='Деload '+finalW+'кг';
+    return{w:finalW,label:lbl,cls:dl.f<1?'r':cls};
+  } else if(last.reps<ex.tr-3&&last.weight>ex.dw){
+    baseW=Math.max(ex.dw,last.weight-ex.inc);
+    return{w:Math.round(baseW*dl.f*2)/2,label:'Снизь',cls:'r'};
+  } else {
+    baseW=last.weight;
+    var finalW2=Math.round(baseW*dl.f*2)/2;
+    return{w:finalW2,label:dl.f<1?'Деload':'Держи',cls:dl.f<1?'r':'y'};
+  }
+}
+
+var CU='him',CP='plan',openDays={},openExs={},restIv=null,actFormActive=null;
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2300);}
+function startRest(sec){
+  stopRest();var s=sec||90;
+  var ov=document.getElementById('restOv'),n=document.getElementById('rtN');
+  ov.classList.add('show');n.textContent=s;n.style.color='var(--g)';
+  restIv=setInterval(function(){s--;n.textContent=s;if(s<=30)n.style.color='var(--r)';else if(s<=60)n.style.color='var(--y)';if(s<=0){stopRest();showToast('Следующий подход! 💥');}},1000);
+}
+function stopRest(){clearInterval(restIv);document.getElementById('restOv').classList.remove('show');}
+
+function renderPlan(){
+  var ac=CU==='him'?'him':'her';
+  var phase=getPhase(CU),phIdx=getPhaseIdx(CU),nextDK=getNextDayKey(CU),dayKeys=getDayKeys(CU);
+  var dl=deloadFactor(CU),cycle=getCycleNum(CU);
+  var h='';
+  if(CU==='her')h+='<div class="injury-note">⚠️ Ключица: без жимов над головой. Дискомфорт в плече — немедленно стоп.</div>';
+  if(dl.msg)h+='<div class="deload-banner">⏸ '+dl.msg+'</div>';
+  h+='<div class="phase-info">🎯 '+phase.label+' — '+phase.name;
+  if(cycle>1)h+='<span class="cycle-badge">Цикл '+cycle+'</span>';
+  h+=' · '+totalSessions(CU)+' тренировок</div>';
+  h+='<div class="sec">СЛЕДУЮЩАЯ ТРЕНИРОВКА</div>';
+  var nextDay=phase[nextDK];
+  if(nextDay){
+    h+='<div class="card" style="border-color:var(--ac);border-width:1.5px">';
+    h+='<div style="padding:10px 13px;background:linear-gradient(90deg,'+(CU==='him'?'var(--himd)':'var(--herd)')+',transparent);display:flex;align-items:center;gap:8px">';
+    h+='<span style="background:var(--ac);color:#fff;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px">'+nextDK+'</span>';
+    h+='<span style="font-size:13px;font-weight:700">'+nextDay.title+'</span></div>';
+    h+=renderExs(nextDay.ids,ac,true);h+='</div>';
+  }
+  h+='<div class="sec">ВСЯ ПРОГРАММА</div>';
+  dayKeys.forEach(function(dk){
+    var day=phase[dk];if(!day)return;
+    var oid='day_'+CU+'_'+dk,isOpen=openDays[oid];
+    h+='<div class="card '+(isOpen?'open':'')+'" id="'+oid+'">';
+    h+='<div class="day-hdr '+(CU==='him'?'him-g':'her-g')+'" onclick="toggleDay(\''+oid+'\')">';
+    h+='<div class="day-num '+ac+'">'+dk+'</div>';
+    h+='<div class="day-meta"><h3>'+day.title+'</h3><p>'+day.ids.length+' упражнений</p></div>';
+    h+='<div class="tog"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div></div>';
+    h+='<div class="day-body">'+renderExs(day.ids,ac,false)+'</div></div>';
+  });
+  if(CU==='her')h+=renderHerHome();
+  document.getElementById('pg-plan').innerHTML=h;
+}
+
+function renderExs(ids,ac,forToday){
+  if(!ids||!ids.length)return'';
+  var h='<div class="ex-block"><div class="ex-title '+ac+'"><span style="font-size:10px;color:var(--m2)">'+ids.length+' упр.</span></div>';
+  ids.forEach(function(exId){
+    var ex=EX[exId];if(!ex)return;
+    var sug=getSuggestion(CU,exId);
+    var logs=getLogs(CU,exId),last=logs[0];
+    var uid=CU+'_'+exId+'_t';
+    var isOpen=openExs[uid];
+    var trDisp=ex.isT?(ex.tr+'сек'):ex.tr;
+    h+='<div class="ex-row '+(isOpen?'ex-open':'')+'" id="ex_'+uid+'">';
+    h+='<div class="ex-main" onclick="toggleEx(\''+uid+'\')">';
+    h+='<div class="ex-ico '+ac+'">'+ex.icon+'</div>';
+    h+='<div class="ex-info"><div class="ex-name">'+ex.n+'</div>';
+    h+='<div class="ex-badges"><span class="badge bg-x">'+ex.ts+'×'+trDisp+'</span>';
+    if(sug.w>0||ex.dw>0)h+='<span class="badge bg-'+ac+'">'+sug.w+' кг</span>';
+    if(sug.label)h+='<span class="sug '+sug.cls+'">'+sug.label+'</span>';
+    if(last)h+='<span class="badge bg-g">✓ '+last.weight+'кг×'+last.reps+'</span>';
+    h+='</div></div>';
+    h+='<svg class="ex-arr" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>';
+    h+='<div class="ex-detail">';
+    h+='<div class="ex-svg">'+getSVG(exId)+'</div>';
+    if(ex.restrict==='clavicle')h+='<div class="ex-restrict">⚠️ Ключица: лёгкий вес, неполная амплитуда при дискомфорте</div>';
+    h+='<div class="ex-tips"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--m);margin-bottom:7px;font-weight:700">Техника выполнения</div>';
+    (ex.tips||[]).forEach(function(t){h+='<div class="ex-tip">'+t+'</div>';});
+    h+='</div>';
+    h+='<div class="ex-log"><div class="lbl" style="margin-bottom:8px">📝 Записать подход</div>';
+    h+='<div class="row3" style="margin-bottom:8px">';
+    h+='<div><span class="lbl">Вес кг</span><input class="inp" type="number" id="w_'+uid+'" placeholder="'+sug.w+'" inputmode="decimal" value="'+sug.w+'"></div>';
+    h+='<div><span class="lbl">Повторений</span><input class="inp" type="number" id="r_'+uid+'" placeholder="'+ex.tr+'" inputmode="numeric"></div>';
+    h+='<div><span class="lbl">Подходов</span><input class="inp" type="number" id="s_'+uid+'" placeholder="'+ex.ts+'" inputmode="numeric" value="'+ex.ts+'"></div>';
+    h+='</div>';
+    h+='<button class="btn btn-'+ac+'" onclick="doLog(\''+exId+'\',\''+uid+'\')">ЗАПИСАТЬ + ТАЙМЕР ОТДЫХА</button></div>';
+    if(logs.length){
+      h+='<div style="padding:0 12px 10px;display:flex;flex-direction:column;gap:4px">';
+      logs.slice(0,3).forEach(function(l,i){
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--s);border-radius:6px;font-size:11px;font-family:monospace;gap:8px">';
+        h+='<span style="color:var(--m2)">'+l.date+'</span>';
+        h+='<span style="color:var(--t)">'+l.weight+'кг × '+l.reps+'р × '+l.sets+'п</span>';
+        h+='<span onclick="doDelLog(\''+exId+'\','+i+')" style="color:var(--m);cursor:pointer;padding:2px 5px;font-size:14px">×</span>';
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+    h+='</div></div>';
+  });
+  h+='</div>';
+  return h;
+}
+
+function toggleDay(oid){openDays[oid]=!openDays[oid];var el=document.getElementById(oid);if(el)el.classList.toggle('open',openDays[oid]);}
+function toggleEx(uid){
+  var wasOpen=openExs[uid];
+  Object.keys(openExs).forEach(function(k){openExs[k]=false;});
+  document.querySelectorAll('.ex-row').forEach(function(r){r.classList.remove('ex-open');});
+  if(!wasOpen){openExs[uid]=true;var el=document.getElementById('ex_'+uid);if(el)el.classList.add('ex-open');}
+}
+function doLog(exId,uid){
+  var w=document.getElementById('w_'+uid),r=document.getElementById('r_'+uid),s=document.getElementById('s_'+uid);
+  if(!w||(!w.value&&!r.value)){showToast('Введи вес или повторения');return;}
+  addLog(CU,exId,w.value,r?r.value:'',s?(s.value||'3'):'3');
+  showToast('Записано 💪');startRest(90);renderPlan();
+  setTimeout(function(){toggleEx(CU+'_'+exId+'_t');},60);
+}
+function doDelLog(exId,idx){delLog(CU,exId,idx);renderPlan();}
+
+function renderHerHome(){
+  var d=getD();
+  var acts=(d.acts||[]).filter(function(a){return a.user==='her';}).slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var h='<div class="sec">💃 ДОМАШНИЕ АКТИВНОСТИ</div>';
+  HOME_ACTS.forEach(function(w){
+    h+='<div class="act-btn" onclick="openActForm(\''+w.id+'\',\''+w.name+'\','+w.cal+',\''+w.icon+'\')">';
+    h+='<div class="act-ico">'+w.icon+'</div><div><div class="act-name">'+w.name+'</div><div class="act-sub">'+w.desc+' · ~'+w.cal+' ккал/ч</div></div>';
+    h+='<svg style="margin-left:auto;color:var(--m);flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="17" height="17"><polyline points="9 18 15 12 9 6"/></svg></div>';
+  });
+  h+='<div class="act-log-form" id="actForm"><div class="cp">';
+  h+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:11px" id="actFormTitle">Записать</div>';
+  h+='<div class="row2" style="margin-bottom:9px"><div><span class="lbl">Длительность (мин)</span><input class="inp" type="number" id="actDur" value="45" inputmode="numeric"></div>';
+  h+='<div><span class="lbl">Интенсивность</span><select class="inp" id="actInt" style="cursor:pointer"><option value="low">Лёгкая</option><option value="med" selected>Средняя</option><option value="high">Высокая</option></select></div></div>';
+  h+='<button class="btn btn-her" onclick="saveAct()">ЗАПИСАТЬ</button></div></div>';
+  if(acts.length){
+    h+='<div class="sec">ИСТОРИЯ</div>';
+    acts.slice(0,8).forEach(function(a){
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--c);border:1px solid var(--b);border-radius:9px;margin-bottom:7px">';
+      h+='<div><div style="font-size:13px;font-weight:700">'+a.icon+' '+a.name+'</div>';
+      h+='<div style="font-size:10px;color:var(--m2);font-family:monospace;margin-top:2px">'+a.date+' · '+a.dur+' мин</div></div>';
+      h+='<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--her)">'+a.cal+'<span style="font-size:10px;font-family:sans-serif;color:var(--m2)"> ккал</span></div></div>';
+    });
+  }
+  return h;
+}
+function openActForm(id,name,cal,icon){
+  actFormActive={id:id,name:name,cal:cal,icon:icon};
+  var f=document.getElementById('actForm'),t=document.getElementById('actFormTitle');
+  if(f){f.style.display='block';if(t)t.textContent='Записать: '+name;f.scrollIntoView({behavior:'smooth'});}
+}
+function saveAct(){
+  if(!actFormActive)return;
+  var dur=parseInt(document.getElementById('actDur').value)||45;
+  var intensity=document.getElementById('actInt').value||'med';
+  var mult={low:0.7,med:1,high:1.3}[intensity]||1;
+  var cal=Math.round(actFormActive.cal*(dur/60)*mult);
+  var d=getD();if(!d.acts)d.acts=[];
+  d.acts.push({user:'her',id:actFormActive.id,name:actFormActive.name,icon:actFormActive.icon,dur:dur,intensity:intensity,cal:cal,date:today()});
+  setD(d);showToast('Записано! '+cal+' ккал 🔥');
+  var f=document.getElementById('actForm');if(f)f.style.display='none';
+  actFormActive=null;renderPlan();
+}
+
+var progTab='stats',progEx='';
+function renderProg(){
+  var ac=CU==='him'?'him':'her',acl=CU==='him'?'rgba(124,58,237,.85)':'rgba(219,39,119,.85)',acf=CU==='him'?'rgba(124,58,237,.12)':'rgba(219,39,119,.12)';
+  var d=getD(),prefix=CU+'_',allLogs=[],days={},exList=[],seenEx={},totW=0,totS=0;
+  Object.keys(d.logs||{}).forEach(function(k){
+    if(k.indexOf(prefix)!==0)return;
+    var exId=k.replace(prefix,'');
+    (d.logs[k]||[]).forEach(function(l){days[l.date]=1;totW+=(l.weight*l.reps*l.sets)||0;totS+=l.sets||0;allLogs.push({date:l.date,weight:l.weight,reps:l.reps,sets:l.sets,exId:exId,exName:(EX[exId]?EX[exId].n:exId)});});
+    if(!seenEx[exId]&&(d.logs[k]||[]).length){seenEx[exId]=1;exList.push({id:exId,name:(EX[exId]?EX[exId].n:exId)});}
+  });
+  allLogs.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var dayCount=Object.keys(days).length;
+  var h='<div class="sec-tabs"><div class="sec-tab '+(progTab==='stats'?'a':'')+'" onclick="switchProgTab(\'stats\')">📊 Статы</div><div class="sec-tab '+(progTab==='graph'?'a':'')+'" onclick="switchProgTab(\'graph\')">📈 Графики</div><div class="sec-tab '+(progTab==='ana'?'a':'')+'" onclick="switchProgTab(\'ana\')">🧠 Анализ</div></div>';
+  h+='<div class="pane '+(progTab==='stats'?'a':'')+'" id="pt-stats">';
+  h+='<div class="stats4"><div class="stat"><div class="l">Тренировок</div><div class="v '+ac+'">'+dayCount+'</div><div class="sub">дней</div></div><div class="stat"><div class="l">Записей</div><div class="v '+ac+'">'+allLogs.length+'</div><div class="sub">подходов</div></div><div class="stat"><div class="l">Тоннаж</div><div class="v g">'+Math.round(totW/1000)+'</div><div class="sub">тонн</div></div><div class="stat"><div class="l">Подходов</div><div class="v g">'+totS+'</div><div class="sub">всего</div></div></div>';
+  var targets=CU==='him'?{bench:{n:'Жим лёжа',t:90},lat:{n:'Тяга блока',t:80},squat:{n:'Присед',t:80},rdl:{n:'Рум. тяга',t:70}}:{gbr:{n:'Ягодичный мост',t:25},lcurl:{n:'Сгибание ног',t:40},herlat:{n:'Тяга блока',t:45},hthrust:{n:'Hip Thrust',t:50}};
+  h+='<div class="sec">ПРОГРЕСС К ЦЕЛЯМ</div><div class="card cp">';
+  Object.keys(targets).forEach(function(exId){
+    var t=targets[exId],logs=(d.logs[prefix+exId]||[]);
+    var best=logs.length?Math.max.apply(null,logs.map(function(l){return l.weight||0;})):0;
+    var pct=Math.min(100,Math.round((best/t.t)*100));
+    h+='<div class="pb-item"><div class="pb-hdr"><span class="pb-name">'+t.n+'</span><span class="pb-val">'+best+'кг / '+t.t+'кг</span></div><div class="pb"><div class="pb-fill '+ac+'" style="width:'+pct+'%"></div></div></div>';
+  });
+  h+='</div>';
+  h+='<div class="sec">ПОСЛЕДНИЕ ЗАПИСИ</div>';
+  if(allLogs.length){allLogs.slice(0,10).forEach(function(l){h+='<div style="background:var(--c);border:1px solid var(--b);border-radius:9px;padding:10px 12px;margin-bottom:7px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:13px;font-weight:700">'+l.exName+'</span><span style="font-size:10px;color:var(--m2);font-family:monospace">'+l.date+'</span></div><div style="display:flex;gap:5px"><span class="badge bg-'+ac+'">'+l.weight+' кг</span><span class="badge bg-x">'+l.reps+'р × '+l.sets+'п</span></div></div>';});}
+  else h+='<div style="text-align:center;padding:30px;color:var(--m);font-size:13px">📋 Записей нет</div>';
+  h+='</div>';
+  h+='<div class="pane '+(progTab==='graph'?'a':'')+'" id="pt-graph">';
+  h+='<div class="card cp"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:9px;font-weight:700">📈 ПРОГРЕСС ВЕСА</div>';
+  h+='<select class="sel" id="exSel" onchange="selectEx(this.value)"><option value="">Выбери упражнение...</option>';
+  exList.forEach(function(e){h+='<option value="'+e.id+'"'+(progEx===e.id?' selected':'')+'>'+e.name+'</option>';});
+  h+='</select><canvas id="progC" height="150" style="display:'+(progEx?'block':'none')+'"></canvas>';
+  if(!progEx)h+='<div style="text-align:center;color:var(--m);font-size:12px;padding:20px">📊 Выбери упражнение</div>';
+  h+='</div><div class="card cp"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:9px;font-weight:700">📅 АКТИВНОСТЬ ПО НЕДЕЛЯМ</div><canvas id="weekC" height="90"></canvas></div>';
+  h+='</div>';
+  h+='<div class="pane '+(progTab==='ana'?'a':'')+'" id="pt-ana">'+buildAnalysis(allLogs,dayCount)+'</div>';
+  document.getElementById('pg-prog').innerHTML=h;
+  setTimeout(function(){drawWeek(allLogs,acl,acf);if(progEx)drawLine(progEx,acl,acf);},80);
+}
+function switchProgTab(t){progTab=t;renderProg();}
+function selectEx(v){progEx=v;renderProg();}
+
+function buildAnalysis(allLogs,totalDays){
+  if(!allLogs.length)return'<div style="text-align:center;padding:30px;color:var(--m)">🧠 Нет данных. Запиши первую тренировку!</div>';
+  var items=[],now=new Date();
+  var allDates=[];allLogs.forEach(function(l){if(allDates.indexOf(l.date)<0)allDates.push(l.date);});allDates.sort();
+  var d30=allDates.filter(function(dt){return new Date(dt)>new Date(now-30*864e5);}).length;
+  if(d30>=10)items.push({c:'g',t:'Отличная частота: '+d30+' тренировок за 30 дней!'});
+  else if(d30>=6)items.push({c:'y',t:d30+' тренировок за 30 дней. Цель — 12+.'});
+  else items.push({c:'r',t:'Только '+d30+' тренировок за 30 дней. Нужна регулярность — 3 раза/нед.'});
+  var dg=allDates.length?Math.floor((now-new Date(allDates[allDates.length-1]))/864e5):99;
+  var dl=deloadFactor(CU);
+  if(dg<=1)items.push({c:'g',t:'Последняя тренировка '+(dg===0?'сегодня':'вчера')+' 🔥'});
+  else if(dg<=3)items.push({c:'g',t:'Последняя тренировка '+dg+' дня назад. Хороший ритм!'});
+  else if(dg<=6)items.push({c:'y',t:'Последняя тренировка '+dg+' дней назад. '+dl.msg});
+  else items.push({c:'r',t:'Перерыв '+dg+' дней! '+dl.msg});
+  var byEx={};allLogs.forEach(function(l){if(!byEx[l.exId])byEx[l.exId]=[];byEx[l.exId].push(l);});
+  var prog=0,stuck=0;
+  Object.keys(byEx).forEach(function(k){
+    var logs=byEx[k];if(logs.length<3)return;
+    var sorted=logs.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+    var h2=Math.ceil(sorted.length/2);
+    var af=sorted.slice(0,h2).reduce(function(s,l){return s+(l.weight||0);},0)/h2;
+    var al=sorted.slice(h2).reduce(function(s,l){return s+(l.weight||0);},0)/(sorted.length-h2||1);
+    if(al>af*1.04)prog++;else if(al<=af)stuck++;
+  });
+  if(prog>0)items.push({c:'g',t:'Прогрессия веса в '+prog+' упражнении!'});
+  if(stuck>0)items.push({c:'y',t:'В '+stuck+' упражнении вес не растёт. Попробуй +2.5кг на следующей тренировке.'});
+  var phIdx=getPhaseIdx(CU),phase=getPhase(CU),cycle=getCycleNum(CU);
+  items.push({c:'g',t:'Текущая фаза: '+phase.label+' — '+phase.name+(cycle>1?' (Цикл '+cycle+')':'')+'.'});
+  var nextPhase=PHASES[CU][Math.min(phIdx+1,PHASES[CU].length-1)];
+  if(nextPhase&&nextPhase!==phase){var rem=phase.sessions[1]-totalSessions(CU);if(rem>0)items.push({c:'y',t:'До следующей фазы ('+nextPhase.name+'): ~'+rem+' тренировок.'});}
+  var recs=[],bgEx=Object.keys(byEx).slice(0,4);
+  if(dg>=4)recs.push({c:'r',t:'Запланируй тренировку! 4+ дней без нагрузки замедляет прогресс.'});
+  bgEx.forEach(function(k){var logs=byEx[k];var last=logs[logs.length-1];var ex=EX[k];if(last&&ex&&last.reps>=ex.tr&&last.sets>=ex.ts)recs.push({c:'g',t:ex.n+': выполнил всё — следующий раз +'+ex.inc+'кг!'});});
+  if(CU==='him'&&totalDays>20&&!byEx['dead'])recs.push({c:'y',t:'Рекомендуем добавить становую тягу — фундаментальное упражнение для силы.'});
+  if(!recs.length)recs.push({c:'g',t:'Продолжай в том же темпе. Ты двигаешься правильно!'});
+  var h='<div class="card cp"><div style="font-size:13px;font-weight:700;margin-bottom:10px">🧠 Автоматический анализ</div>';
+  items.forEach(function(i){h+='<div class="ana-item"><div class="dot '+i.c+'"></div><div>'+i.t+'</div></div>';});
+  h+='</div><div class="card cp" style="margin-top:10px"><div style="font-size:13px;font-weight:700;margin-bottom:10px">📌 Рекомендации на эту неделю</div>';
+  recs.forEach(function(r){h+='<div class="ana-item"><div class="dot '+r.c+'"></div><div>'+r.t+'</div></div>';});
+  h+='</div>';
+
+  // Что будет после всех фаз
+  h+='<div class="card cp" style="margin-top:10px"><div style="font-size:13px;font-weight:700;margin-bottom:10px">🔄 Как работает адаптация</div>';
+  h+='<div class="ana-item"><div class="dot g"></div><div><b style="color:var(--t)">Пропустил 1–3 дня:</b> норма, вес без изменений.</div></div>';
+  h+='<div class="ana-item"><div class="dot y"></div><div><b style="color:var(--t)">Пропустил 4–6 дней:</b> трекер автоматически снижает предложенный вес на 10% для безопасной разминки.</div></div>';
+  h+='<div class="ana-item"><div class="dot y"></div><div><b style="color:var(--t)">Пропустил 7–13 дней:</b> -20%. Деload-неделя — восстановление техники.</div></div>';
+  h+='<div class="ana-item"><div class="dot r"></div><div><b style="color:var(--t)">Пропустил 2+ недели:</b> -30%. Осторожное восстановление, не торопись.</div></div>';
+  h+='<div class="ana-item"><div class="dot g"></div><div><b style="color:var(--t)">После 3 фаз (Цикл 2+):</b> программа перезапускается с более тяжёлыми упражнениями. Веса рассчитываются от твоих лучших результатов — прогресс накапливается бесконечно.</div></div>';
+  h+='</div>';
+  return h;
+}
+
+function drawLine(exId,acl,acf){
+  var canvas=document.getElementById('progC');if(!canvas)return;
+  var d=getD(),prefix=CU+'_',k=prefix+exId;
+  var logs=(d.logs[k]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+  var weights=logs.map(function(l){return l.weight;}),labels=logs.map(function(l){return l.date;});
+  if(!weights.length){canvas.style.display='none';return;}
+  canvas.style.display='block';
+  var W=canvas.offsetWidth||300,H=150;canvas.width=W;canvas.height=H;
+  var p={t:15,r:15,b:28,l:36},cw=W-p.l-p.r,ch=H-p.t-p.b;
+  var max=Math.max.apply(null,weights)*1.1||10,min=Math.min.apply(null,weights)*0.9||0,range=max-min||1;
+  var ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#1e1e1e';ctx.lineWidth=1;
+  for(var i=0;i<=4;i++){var y=p.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cw,y);ctx.stroke();ctx.fillStyle='#555';ctx.font='9px monospace';ctx.textAlign='right';ctx.fillText(Math.round(max-(range/4)*i),p.l-3,y+3);}
+  if(weights.length<2){var x0=p.l+cw/2,y0=p.t+ch-((weights[0]-min)/range)*ch;ctx.beginPath();ctx.arc(x0,y0,5,0,Math.PI*2);ctx.fillStyle=acl;ctx.fill();return;}
+  ctx.beginPath();weights.forEach(function(v,i){var x=p.l+(i/(weights.length-1))*cw,y=p.t+ch-((v-min)/range)*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.lineTo(p.l+cw,p.t+ch);ctx.lineTo(p.l,p.t+ch);ctx.closePath();ctx.fillStyle=acf;ctx.fill();
+  ctx.beginPath();ctx.strokeStyle=acl;ctx.lineWidth=2.5;ctx.lineJoin='round';weights.forEach(function(v,i){var x=p.l+(i/(weights.length-1))*cw,y=p.t+ch-((v-min)/range)*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  weights.forEach(function(v,i){var x=p.l+(i/(weights.length-1))*cw,y=p.t+ch-((v-min)/range)*ch;ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle=acl;ctx.fill();ctx.strokeStyle='#0d0d0d';ctx.lineWidth=1.5;ctx.stroke();});
+  ctx.fillStyle='#555';ctx.font='9px monospace';ctx.textAlign='left';ctx.fillText(labels[0],p.l,H-4);ctx.textAlign='right';ctx.fillText(labels[labels.length-1],p.l+cw,H-4);
+}
+function drawWeek(allLogs,acl,acf){
+  var canvas=document.getElementById('weekC');if(!canvas)return;
+  var weeks={};allLogs.forEach(function(l){var dt=new Date(l.date);var wk=dt.getFullYear()+'-W'+Math.ceil((dt.getDate()+new Date(dt.getFullYear(),dt.getMonth(),1).getDay())/7);weeks[wk]=(weeks[wk]||0)+1;});
+  var labels=Object.keys(weeks).sort().slice(-10),vals=labels.map(function(w){return weeks[w];});
+  if(!labels.length)return;
+  var W=canvas.offsetWidth||300,H=90;canvas.width=W;canvas.height=H;
+  var max=Math.max.apply(null,vals.concat([1]));var ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  var bw=Math.floor(W/labels.length*0.6),gap=W/labels.length;
+  vals.forEach(function(v,i){var h2=Math.round((v/max)*(H-18)),x=Math.round(i*gap+(gap-bw)/2),y=H-18-h2;ctx.fillStyle=acl;ctx.beginPath();ctx.rect(x,y,bw,h2);ctx.fill();ctx.fillStyle='#555';ctx.font='8px monospace';ctx.textAlign='center';ctx.fillText(v,x+bw/2,H-4);});
+}
+
+function renderFood(){
+  var ac=CU==='him'?'him':'her';
+  var d=getD(),t=today();
+  var df=(d.food&&d.food[CU]&&d.food[CU][t])?d.food[CU][t]:{meals:[],water:0};
+  var goals=CU==='him'?{cal:2400,prot:160,water:2500}:{cal:1800,prot:120,water:2000};
+  var totCal=df.meals.reduce(function(s,m){return s+(m.cal||0);},0);
+  var totProt=df.meals.reduce(function(s,m){return s+(m.prot||0);},0);
+  var water=df.water||0;
+  function pct(v,g){return Math.min(100,Math.round(v/g*100));}
+  var h='<div class="card cp"><div style="font-size:10px;color:var(--m2);font-family:monospace;margin-bottom:9px">'+t+'</div>';
+  h+='<div class="mac3"><div class="mac"><div class="mv" style="color:var(--y)">'+totCal+'</div><div class="ml">ккал</div></div><div class="mac"><div class="mv" style="color:var(--g)">'+totProt+'г</div><div class="ml">белок</div></div><div class="mac"><div class="mv" style="color:#60a5fa">'+(water/1000).toFixed(1)+'л</div><div class="ml">вода</div></div></div>';
+  var bars=[['Калории',pct(totCal,goals.cal),'var(--y)',totCal,goals.cal,''],['Белок',pct(totProt,goals.prot),'var(--g)',totProt,goals.prot,'г'],['Вода',pct(water,goals.water),'#60a5fa',water,goals.water,'мл']];
+  bars.forEach(function(b){h+='<div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><span style="font-size:10px;color:var(--m2);width:48px;flex-shrink:0">'+b[0]+'</span><div style="flex:1;height:6px;background:var(--s);border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;width:'+b[1]+'%;background:'+b[2]+';transition:width .5s"></div></div><span style="font-size:10px;color:var(--m2);font-family:monospace;width:62px;text-align:right">'+b[3]+'/'+b[4]+b[5]+'</span></div>';});
+  h+='</div>';
+  h+='<div class="sec">ВОДА</div><div class="card cp"><div class="water-row">';
+  [200,350,500].forEach(function(ml){h+='<button class="wbtn" onclick="addWater('+ml+')">+'+ml+'мл</button>';});
+  h+='<div style="margin-left:auto;font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:#60a5fa">'+(water/1000).toFixed(1)+'л</div></div>';
+  h+='<div style="font-size:11px;color:var(--m2);margin-top:7px">Цель: '+(goals.water/1000).toFixed(1)+'л · '+(water>=goals.water?'✅ Выполнено!':Math.round((goals.water-water)/1000*10)/10+'л осталось')+'</div></div>';
+  h+='<div class="sec">ДОБАВИТЬ ЕДУ</div><div class="card cp">';
+  h+='<div class="row3" style="margin-bottom:7px"><input class="inp" type="text" id="mName" placeholder="Что ел?"><input class="inp" type="number" id="mCal" placeholder="ккал" inputmode="numeric"><input class="inp" type="number" id="mProt" placeholder="белок г" inputmode="numeric"></div>';
+  h+='<button class="btn btn-'+ac+'" onclick="addMeal()">+ ДОБАВИТЬ</button>';
+  h+='<div style="margin-top:9px;display:flex;flex-direction:column;gap:5px">';
+  df.meals.forEach(function(m,i){h+='<div class="meal-item"><span class="mi-n">'+m.name+'</span><span style="color:var(--y);font-family:monospace;font-size:11px">'+m.cal+'ккал</span><span style="color:var(--g);font-family:monospace;font-size:11px">'+m.prot+'г</span><span class="mi-del" onclick="delMeal('+i+')">×</span></div>';});
+  if(!df.meals.length)h+='<div style="color:var(--m);font-size:12px;text-align:center;padding:8px">Нет записей</div>';
+  h+='</div></div>';
+  var tips=CU==='him'?['Белок: 2г/кг → ~228г/день','Калории: 2400 ккал (-500 от нормы)','Углеводы до и после тренировки','Жиры минимум 60г/день']:['Белок: 1.6г/кг → ~130г/день','Калории: 1800 ккал (-400 от нормы)','Клетчатка и овощи в каждый приём','Перекусы: творог, яйца, орехи, кефир'];
+  h+='<div class="card cp" style="margin-top:10px"><div style="font-size:11px;font-weight:700;margin-bottom:8px">💡 Рекомендации</div>';
+  tips.forEach(function(t){h+='<div style="font-size:12px;color:var(--m2);line-height:1.8">• '+t+'</div>';});
+  h+='</div>';
+  document.getElementById('pg-food').innerHTML=h;
+}
+function addMeal(){var n=(document.getElementById('mName').value||'').trim();var c=parseFloat(document.getElementById('mCal').value)||0;var p=parseFloat(document.getElementById('mProt').value)||0;if(!n){showToast('Введи название');return;}var d=getD(),t=today();if(!d.food)d.food={};if(!d.food[CU])d.food[CU]={};if(!d.food[CU][t])d.food[CU][t]={meals:[],water:0};d.food[CU][t].meals.push({name:n,cal:c,prot:p});setD(d);showToast('Записано 🍽');renderFood();}
+function delMeal(i){var d=getD(),t=today();if(d.food&&d.food[CU]&&d.food[CU][t]){d.food[CU][t].meals.splice(i,1);setD(d);renderFood();}}
+function addWater(ml){var d=getD(),t=today();if(!d.food)d.food={};if(!d.food[CU])d.food[CU]={};if(!d.food[CU][t])d.food[CU][t]={meals:[],water:0};d.food[CU][t].water=(d.food[CU][t].water||0)+ml;setD(d);showToast('+'+ml+'мл 💧');renderFood();}
+
+function renderProf(){
+  var ac=CU==='him'?'him':'her';
+  var d=getD(),p=(d.profile&&d.profile[CU])?d.profile[CU]:{};
+  var h='<div class="sec">ПРОФИЛЬ</div><div class="card cp"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:10px;font-weight:700">Данные</div>';
+  var fields=[['Рост (см)','height','numeric'],['Вес сейчас (кг)','weight','decimal'],['Цель (кг)','target','decimal'],['Возраст','age','numeric'],['Грудь (см)','chest','decimal'],['Талия (см)','waist','decimal'],['Бёдра (см)','hips','decimal']];
+  if(CU==='him')fields.push(['Бицепс (см)','bicep','decimal']);
+  fields.forEach(function(f){h+='<div class="field-row"><label>'+f[0]+'</label><input class="inp" type="number" id="pf_'+f[1]+'" value="'+(p[f[1]]||'')+'" inputmode="'+f[2]+'"></div>';});
+  h+='</div><button class="btn btn-grad" onclick="saveProfile()" style="margin-bottom:10px">СОХРАНИТЬ ПРОФИЛЬ</button>';
+  if(p.weight&&p.target){var cur=parseFloat(p.weight),tgt=parseFloat(p.target),start=parseFloat(p.startWeight||p.weight);var lost=start-cur,toGo=cur-tgt,total=start-tgt;var pct2=total>0?Math.min(100,Math.max(0,Math.round(lost/total*100))):0;h+='<div class="card cp"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:10px;font-weight:700">Прогресс по весу</div><div class="pb-item"><div class="pb-hdr"><span class="pb-name">Снижение</span><span class="pb-val">-'+lost.toFixed(1)+'кг / ещё '+toGo.toFixed(1)+'кг</span></div><div class="pb"><div class="pb-fill '+ac+'" style="width:'+pct2+'%"></div></div></div><div style="text-align:center;font-family:\'Bebas Neue\',sans-serif;font-size:38px;color:var(--g);margin:8px 0">'+pct2+'%</div><div style="text-align:center;font-size:11px;color:var(--m2)">к цели '+tgt+'кг</div></div>';}
+  h+='<div class="sec">ДАННЫЕ</div><div class="card cp"><div style="display:flex;gap:8px"><button onclick="exportData()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:12px;cursor:pointer">📤 Экспорт</button><button onclick="if(confirm(\'Удалить все данные?\'))resetData()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--r);background:transparent;color:var(--r);font-size:12px;cursor:pointer">🗑 Сбросить</button></div></div>';
+  document.getElementById('pg-prof').innerHTML=h;
+}
+function saveProfile(){var d=getD();if(!d.profile)d.profile={};var prev=d.profile[CU]||{};var fields=['height','weight','target','age','chest','waist','hips','bicep'];var obj={};fields.forEach(function(f){var el=document.getElementById('pf_'+f);obj[f]=el?(el.value||prev[f]):prev[f];});obj.startWeight=prev.startWeight||obj.weight;d.profile[CU]=obj;setD(d);showToast('Сохранено ✅');renderProf();}
+function exportData(){var blob=new Blob([JSON.stringify(getD(),null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='gym_backup_'+today()+'.json';a.click();URL.revokeObjectURL(url);showToast('Экспортировано 📤');}
+function resetData(){localStorage.removeItem('gym_v5');showToast('Данные удалены');setTimeout(function(){location.reload();},800);}
+
+function switchUser(u){CU=u;openDays={};openExs={};document.querySelectorAll('.utab').forEach(function(t){t.classList.remove('a');});document.querySelector('.utab.'+u).classList.add('a');var isHer=u==='her';document.documentElement.style.setProperty('--ac',isHer?'var(--her)':'var(--him)');document.documentElement.style.setProperty('--acl',isHer?'var(--herl)':'var(--himl)');document.documentElement.style.setProperty('--acd',isHer?'var(--herd)':'var(--himd)');renderAll();}
+function gp(page,el){CP=page;document.querySelectorAll('.page').forEach(function(p){p.classList.remove('a');});document.querySelectorAll('.bni').forEach(function(b){b.classList.remove('a');});document.getElementById('pg-'+page).classList.add('a');el.classList.add('a');if(page==='plan')renderPlan();else if(page==='prog')renderProg();else if(page==='food')renderFood();else if(page==='prof')renderProf();window.scrollTo(0,0);}
+function renderAll(){renderPlan();if(CP==='prog')renderProg();else if(CP==='food')renderFood();else if(CP==='prof')renderProf();}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+switchUser('him');
+</script>
+</body>
+</html>
