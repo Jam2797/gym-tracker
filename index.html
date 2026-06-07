@@ -101,6 +101,18 @@ canvas{width:100%!important;display:block}
 .pane{display:none}.pane.a{display:block}
 .cycle-badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--him),var(--her));color:#fff;margin-left:8px}
 .food-sug:hover{background:var(--b)!important}
+.onboard-ov{position:fixed;inset:0;background:rgba(8,8,8,.97);backdrop-filter:blur(10px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+.onboard-ov.show{display:flex}
+.onboard-card{max-width:380px;width:100%;text-align:center}
+.onboard-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;background:linear-gradient(135deg,var(--himl),var(--herl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px}
+.onboard-title{font-size:22px;font-weight:700;margin-bottom:8px}
+.onboard-sub{font-size:14px;color:var(--m2);margin-bottom:24px}
+.onboard-btn{display:flex;align-items:center;gap:14px;text-align:left;padding:16px;background:var(--c);border:1px solid var(--b);border-radius:12px;margin-bottom:12px;cursor:pointer;transition:border-color .2s}
+.onboard-btn:active{border-color:var(--him)}
+.ob-emoji{font-size:32px;flex-shrink:0}
+.ob-t{font-size:15px;font-weight:700;margin-bottom:3px}
+.ob-d{font-size:12px;color:var(--m2);line-height:1.4}
+.onboard-skip{margin-top:8px;font-size:13px;color:var(--m);cursor:pointer;padding:8px}
 </style>
 </head>
 <body>
@@ -125,6 +137,16 @@ canvas{width:100%!important;display:block}
 </div>
 <div class="rest-ov" id="restOv"><div><div class="rt-lbl">Отдых</div><div class="rt-n" id="rtN">90</div></div><button class="rt-skip" onclick="stopRest()">Пропустить</button></div>
 <div class="toast" id="toast"></div>
+<div class="onboard-ov" id="onboardOv">
+  <div class="onboard-card">
+    <div class="onboard-logo">GYM TRACKER</div>
+    <div class="onboard-title">Добро пожаловать!</div>
+    <div class="onboard-sub">Есть ли у тебя опыт силовых тренировок?</div>
+    <div class="onboard-btn" onclick="setLevel('beginner')"><div class="ob-emoji">🌱</div><div><div class="ob-t">Я новичок</div><div class="ob-d">Старт с лёгких весов, дольше осваиваем технику в Фазе 1</div></div></div>
+    <div class="onboard-btn" onclick="setLevel('experienced')"><div class="ob-emoji">💪</div><div><div class="ob-t">У меня есть база</div><div class="ob-d">Стандартная программа, стартовые веса из профиля</div></div></div>
+    <div class="onboard-skip" onclick="setLevel('experienced')">Пропустить</div>
+  </div>
+</div>
 <script>
 var SVGS={
   bench:`<svg viewBox="0 0 260 158" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;border-radius:8px"><rect width="260" height="158" fill="#0a0a0a"/><line x1="130" y1="8" x2="130" y2="126" stroke="#1e1e1e" stroke-width="1" stroke-dasharray="3,3"/><text x="65" y="134" text-anchor="middle" fill="#444" font-size="8" font-family="monospace">СТАРТ</text><text x="195" y="134" text-anchor="middle" fill="#ef4444" font-size="8" font-family="monospace">ФИНИШ</text><rect x="5" y="100" width="118" height="8" rx="3" fill="#2a2a2a"/><rect x="15" y="108" width="8" height="20" rx="2" fill="#1e1e1e"/><rect x="100" y="108" width="8" height="20" rx="2" fill="#1e1e1e"/><ellipse cx="60" cy="95" rx="44" ry="6" fill="#3a3a3a"/><circle cx="103" cy="92" r="8" fill="#555"/><line x1="44" y1="93" x2="42" y2="80" stroke="#888" stroke-width="4" stroke-linecap="round"/><line x1="76" y1="93" x2="78" y2="80" stroke="#888" stroke-width="4" stroke-linecap="round"/><rect x="26" y="73" width="68" height="7" rx="2" fill="#bbb"/><rect x="18" y="69" width="10" height="15" rx="2" fill="#888"/><rect x="94" y="69" width="10" height="15" rx="2" fill="#888"/><rect x="32" y="87" width="48" height="9" rx="3" fill="#7c3aed" opacity="0.4"/><text x="130" y="72" text-anchor="middle" fill="#ef4444" font-size="18" font-weight="bold">&#8594;</text><text x="130" y="89" text-anchor="middle" fill="#ef4444" font-size="9" font-family="monospace">&#8593; жать</text><rect x="150" y="100" width="118" height="8" rx="3" fill="#2a2a2a"/><rect x="160" y="108" width="8" height="20" rx="2" fill="#1e1e1e"/><rect x="245" y="108" width="8" height="20" rx="2" fill="#1e1e1e"/><ellipse cx="205" cy="95" rx="44" ry="6" fill="#3a3a3a"/><circle cx="248" cy="92" r="8" fill="#555"/><line x1="189" y1="93" x2="185" y2="62" stroke="#888" stroke-width="4" stroke-linecap="round"/><line x1="221" y1="93" x2="225" y2="62" stroke="#888" stroke-width="4" stroke-linecap="round"/><rect x="171" y="55" width="68" height="7" rx="2" fill="#bbb"/><rect x="163" y="51" width="10" height="15" rx="2" fill="#888"/><rect x="239" y="51" width="10" height="15" rx="2" fill="#888"/><rect x="177" y="87" width="48" height="9" rx="3" fill="#7c3aed" opacity="0.65"/><text x="130" y="150" text-anchor="middle" fill="#666" font-size="7.5" font-family="monospace">ЛОПАТКИ ПРИЖАТЫ · ГРИФ К ГРУДИ · ТАЗ НА СКАМЬЕ</text></svg>`,
@@ -329,7 +351,8 @@ function addLog(user,exId,weight,reps,sets){
 }
 function delLog(user,exId,idx){var d=getD(),k=user+'_'+exId;if(d.logs[k]){d.logs[k].splice(idx,1);setD(d);}}
 function totalSessions(user){var d=getD(),dates={},pf=user+'_';Object.keys(d.logs||{}).forEach(function(k){if(k.indexOf(pf)!==0)return;(d.logs[k]||[]).forEach(function(l){dates[l.date]=1;});});return Object.keys(dates).length;}
-function getPhaseIdx(user){var n=totalSessions(user),ph=PHASES[user];for(var i=0;i<ph.length;i++){if(n>=ph[i].sessions[0]&&n<=ph[i].sessions[1])return i;}return ph.length-1;}
+function getLevel(){var d=getD();return d.level||'experienced';}
+function getPhaseIdx(user){var n=totalSessions(user),ph=PHASES[user];var off=(getLevel()==='beginner')?12:0;for(var i=0;i<ph.length;i++){var lo=(i===0)?0:(ph[i].sessions[0]+off);var hi=ph[i].sessions[1]+off;if(n>=lo&&n<=hi)return i;}return ph.length-1;}
 function getPhase(user){return PHASES[user][getPhaseIdx(user)];}
 function getCycle(user){return Math.floor(getPhaseIdx(user)/3)+1;}
 function getWeekNum(user){return Math.floor(totalSessions(user)/3);}
@@ -355,7 +378,7 @@ function getSug(user,exId){
   var ex=EX[exId];if(!ex)return{w:0,label:'',cls:'n'};
   var dl=getDeload(user);
   var logs=getLogs(user,exId);
-  if(!logs.length)return{w:ex.dw,label:'Старт',cls:'n'};
+  if(!logs.length){var sw=ex.dw;if(getLevel()==='beginner'&&ex.dw>0)sw=Math.round(ex.dw*0.85/2.5)*2.5;return{w:sw,label:'Старт',cls:'n'};}
   var last=logs[0];
   var baseW;
   var targetMet=last.sets>=ex.ts&&last.reps>=ex.tr;
@@ -407,6 +430,14 @@ function renderPlan(){
   var dl=getDeload(CU),cycle=getCycle(CU),sess=totalSessions(CU);
   var h='';
   if(CU==='her')h+='<div class="injury-note">⚠️ Ключица: без жимов над головой. Дискомфорт в плече — немедленно стоп.</div>';
+  // Backup reminder
+  if(hasData()&&daysSinceBackup()>=14){
+    h+='<div class="deload-banner" style="background:#0a1020;border-left-color:#60a5fa;color:#93c5fd">💾 Давно не делал бэкап ('+daysSinceBackup()+' дн). Зайди в Профиль → Экспорт, чтобы не потерять прогресс.</div>';
+  }
+  // Training day indicator
+  var isTD=isTrainingDay();
+  if(isTD===true)h+='<div class="phase-info" style="background:var(--gd);border-left-color:var(--g)">📅 Сегодня — тренировочный день! Следующая: '+nextDK+'</div>';
+  else if(isTD===false)h+='<div class="phase-info" style="background:#1a1a1a;border-left-color:var(--m2);color:var(--m2)">😴 Сегодня день отдыха по твоему расписанию. Восстановление тоже важно!</div>';
   if(dl.msg)h+='<div class="deload-banner">'+dl.msg+'</div>';
   h+='<div class="phase-info">🎯 '+phase.label+' — '+phase.name;
   if(cycle>1)h+='<span class="cycle-badge">Цикл '+cycle+'</span>';
@@ -432,6 +463,20 @@ function renderPlan(){
     h+='<div class="day-body">'+renderExs(day.ids,ac)+'</div></div>';
   });
   if(CU==='her')h+=renderHerHome();
+  // Mood / note widget
+  var note=getTodayNote();
+  h+='<div class="sec">КАК ПРОШЛА ТРЕНИРОВКА?</div><div class="card cp">';
+  h+='<div style="display:flex;gap:8px;margin-bottom:10px">';
+  var moods=[['bad','😫','Тяжело'],['ok','😐','Норм'],['good','💪','Отлично']];
+  moods.forEach(function(m){
+    var sel=note.mood===m[0];
+    h+='<div onclick="saveMood(\''+m[0]+'\')" style="flex:1;text-align:center;padding:10px 4px;border-radius:9px;cursor:pointer;border:1px solid '+(sel?'var(--ac)':'var(--b)')+';background:'+(sel?'rgba(124,58,237,.15)':'var(--s)')+'">';
+    h+='<div style="font-size:24px">'+m[1]+'</div><div style="font-size:10px;color:'+(sel?'var(--ac)':'var(--m2)')+';margin-top:2px;font-weight:700">'+m[2]+'</div></div>';
+  });
+  h+='</div>';
+  h+='<textarea id="todayNote" placeholder="Заметка: болело плечо, отличный пампинг, новый рекорд..." style="width:100%;background:var(--s);border:1px solid var(--b);border-radius:7px;color:var(--t);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:50px;-webkit-appearance:none">'+(note.text||'')+'</textarea>';
+  h+='<button onclick="saveNote()" style="width:100%;margin-top:8px;padding:9px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:12px;cursor:pointer">Сохранить заметку</button>';
+  h+='</div>';
   document.getElementById('pg-plan').innerHTML=h;
 }
 
@@ -480,7 +525,19 @@ function renderExs(ids,ac){
     h+='<div><span class="lbl">Вес кг</span><input class="inp" type="number" id="w_'+uid+'" placeholder="'+sug.w+'" inputmode="decimal" value="'+sug.w+'"></div>';
     h+='<div><span class="lbl">Повторений</span><input class="inp" type="number" id="r_'+uid+'" placeholder="'+ex.tr+'" inputmode="numeric"></div>';
     h+='<div><span class="lbl">Подходов</span><input class="inp" type="number" id="s_'+uid+'" placeholder="'+tSets+'" inputmode="numeric" value="'+tSets+'"></div>';
-    h+='</div><button class="btn btn-'+ac+'" onclick="doLog(\''+exId+'\',\''+uid+'\')">ЗАПИСАТЬ + ТАЙМЕР ОТДЫХА</button></div>';
+    h+='</div><button class="btn btn-'+ac+'" onclick="doLog(\''+exId+'\',\''+uid+'\')">ЗАПИСАТЬ + ТАЙМЕР ОТДЫХА</button>';
+    // Plate calc + 1RM for barbell exercises
+    if(sug.w>=20&&['bench','squat','dead','rdl','ipress','fpress'].indexOf(exId)>=0){
+      var pl=calcPlates(sug.w,20);
+      if(pl&&pl.perSide.length){
+        var ptxt=pl.perSide.map(function(x){return x.n+'×'+x.w;}).join(' + ');
+        h+='<div style="margin-top:8px;padding:8px 10px;background:var(--s);border-radius:7px;font-size:11px;color:var(--m2)">🔢 На '+sug.w+'кг (гриф 20): с каждой стороны <b style="color:var(--t)">'+ptxt+'</b>'+(pl.rem>0?' (+'+pl.rem+'кг не хватает блинами)':'')+'</div>';
+      }
+    }
+    if(last&&last.weight>0&&last.reps>0){
+      h+='<div style="margin-top:6px;padding:8px 10px;background:var(--s);border-radius:7px;font-size:11px;color:var(--m2)">💪 Оценка 1ПМ (разовый максимум): <b style="color:var(--t)">~'+calc1RM(last.weight,last.reps)+'кг</b> по формуле Эпли</div>';
+    }
+    h+='</div>';
     // History
     if(logs.length){
       h+='<div style="padding:0 12px 10px;display:flex;flex-direction:column;gap:4px">';
@@ -1005,8 +1062,61 @@ function renderProf(){
     h+='<div style="text-align:center;font-family:\'Bebas Neue\',sans-serif;font-size:36px;color:var(--g)">'+pct2+'%</div>';
     h+='<div style="text-align:center;font-size:11px;color:var(--m2)">к цели '+tgt+'кг</div></div>';
   }
-  h+='<div class="card cp"><div style="display:flex;gap:8px"><button onclick="exportData()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:12px;cursor:pointer">📤 Экспорт</button><button onclick="if(confirm(\'Удалить все данные?\'))resetData()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--r);background:transparent;color:var(--r);font-size:12px;cursor:pointer">🗑 Сбросить</button></div></div>';
+  // Training days
+  var td=getTrainDays();
+  var dayLabels=[['MO','Пн'],['TU','Вт'],['WE','Ср'],['TH','Чт'],['FR','Пт'],['SA','Сб'],['SU','Вс']];
+  h+='<div class="sec">ДНИ ТРЕНИРОВОК</div><div class="card cp">';
+  h+='<div style="font-size:11px;color:var(--m2);margin-bottom:10px">Отметь дни — на вкладке ПЛАН будет подсказка, тренировочный день сегодня или отдых.</div>';
+  h+='<div style="display:flex;gap:5px">';
+  dayLabels.forEach(function(dl2){
+    var sel=td.indexOf(dl2[0])>=0;
+    h+='<div onclick="toggleTrainDay(\''+dl2[0]+'\')" style="flex:1;text-align:center;padding:9px 2px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;border:1px solid '+(sel?'var(--ac)':'var(--b)')+';background:'+(sel?'rgba(124,58,237,.15)':'var(--s)')+';color:'+(sel?'var(--ac)':'var(--m2)')+'">'+dl2[1]+'</div>';
+  });
+  h+='</div></div>';
+  // Tools
+  h+='<div class="sec">ИНСТРУМЕНТЫ</div><div class="card cp">';
+  h+='<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:8px;font-weight:700">🔢 Калькулятор блинов</div>';
+  h+='<div style="font-size:11px;color:var(--m2);margin-bottom:8px">Какие блины повесить под нужный вес (гриф 20 кг)</div>';
+  h+='<div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:6px">';
+  h+='<div style="flex:1"><span class="lbl">Целевой вес кг</span><input class="inp" type="number" id="plateW" placeholder="60" inputmode="decimal" oninput="updatePlateCalc()"></div>';
+  h+='</div><div id="plateResult" style="font-size:12px;color:var(--m2);min-height:18px"></div>';
+  h+='<div style="height:1px;background:var(--b);margin:14px 0"></div>';
+  h+='<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:8px;font-weight:700">💪 Оценка 1ПМ</div>';
+  h+='<div style="font-size:11px;color:var(--m2);margin-bottom:8px">Разовый максимум по рабочему весу (формула Эпли)</div>';
+  h+='<div class="row2" style="margin-bottom:6px"><div><span class="lbl">Вес кг</span><input class="inp" type="number" id="rmW" inputmode="decimal" oninput="update1RM()"></div><div><span class="lbl">Повторений</span><input class="inp" type="number" id="rmR" inputmode="numeric" oninput="update1RM()"></div></div>';
+  h+='<div id="rmResult" style="font-size:12px;color:var(--m2);min-height:18px"></div>';
+  h+='</div>';
+  // Data section with import
+  h+='<div class="sec">ДАННЫЕ</div>';
+  h+='<div class="card cp"><div style="font-size:11px;color:var(--m2);margin-bottom:10px">💾 Делай экспорт раз в 1-2 недели. На iPhone данные могут стираться при долгом неиспользовании. Импорт восстановит всё из файла.</div>';
+  h+='<div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="exportData()" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--g);background:var(--gd);color:#6ee7b7;font-size:12px;cursor:pointer;font-weight:700">📤 Экспорт (бэкап)</button><button onclick="importData()" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--ac);background:rgba(124,58,237,.12);color:var(--acl);font-size:12px;cursor:pointer;font-weight:700">📥 Импорт</button></div>';
+  var dsb=daysSinceBackup();
+  if(dsb<900)h+='<div style="font-size:10px;color:var(--m2);text-align:center;margin-bottom:8px">Последний бэкап: '+(dsb===0?'сегодня':dsb+' дн назад')+'</div>';
+  h+='<button onclick="if(confirm(\'Удалить ВСЕ данные? Сделай экспорт перед этим!\'))resetData()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--r);background:transparent;color:var(--r);font-size:12px;cursor:pointer">🗑 Сбросить всё</button></div>';
+  // Level
+  var lvl=getLevel();
+  h+='<div class="card cp"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:8px;font-weight:700">Уровень подготовки</div>';
+  h+='<div style="display:flex;gap:8px">';
+  [['beginner','Новичок'],['experienced','Есть база']].forEach(function(L){
+    var sel=lvl===L[0];
+    h+='<div onclick="setLevel(\''+L[0]+'\')" style="flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;border:1px solid '+(sel?'var(--ac)':'var(--b)')+';background:'+(sel?'rgba(124,58,237,.15)':'var(--s)')+';color:'+(sel?'var(--ac)':'var(--m2)')+'">'+L[1]+'</div>';
+  });
+  h+='</div></div>';
   document.getElementById('pg-prof').innerHTML=h;
+}
+function updatePlateCalc(){
+  var el=document.getElementById('plateW'),res=document.getElementById('plateResult');if(!el||!res)return;
+  var w=parseFloat(el.value);if(!w||w<20){res.textContent=w&&w<20?'Меньше веса грифа (20 кг)':'';return;}
+  var pl=calcPlates(w,20);if(!pl||!pl.perSide.length){res.textContent='Только гриф (20 кг)';return;}
+  var txt=pl.perSide.map(function(x){return x.n+'×'+x.w+'кг';}).join(' + ');
+  res.innerHTML='С каждой стороны: <b style="color:var(--t)">'+txt+'</b>'+(pl.rem>0?' <span style="color:var(--y)">(+'+pl.rem+'кг не набирается)</span>':'');
+}
+function update1RM(){
+  var w=parseFloat((document.getElementById('rmW')||{}).value),r=parseInt((document.getElementById('rmR')||{}).value);
+  var res=document.getElementById('rmResult');if(!res)return;
+  if(!w||!r){res.textContent='';return;}
+  var rm=calc1RM(w,r);
+  res.innerHTML='Твой 1ПМ ≈ <b style="color:var(--t)">'+rm+'кг</b>. Для силы работай в 80-90% ('+Math.round(rm*0.8)+'-'+Math.round(rm*0.9)+'кг), для массы 65-75% ('+Math.round(rm*0.65)+'-'+Math.round(rm*0.75)+'кг).';
 }
 function saveProfile(){
   var d=getD();if(!d.profile)d.profile={};var prev=d.profile[CU]||{};
@@ -1015,8 +1125,79 @@ function saveProfile(){
   obj.startWeight=prev.startWeight||obj.weight;obj.scheme=prev.scheme||'loss';obj.customCal=prev.customCal;
   d.profile[CU]=obj;setD(d);showToast('Сохранено ✅');renderProf();
 }
-function exportData(){var blob=new Blob([JSON.stringify(getD(),null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='gym_backup_'+today()+'.json';a.click();URL.revokeObjectURL(url);showToast('Экспортировано 📤');}
+function exportData(){var d=getD();d.lastBackup=today();setD(d);var blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='gym_backup_'+today()+'.json';a.click();URL.revokeObjectURL(url);showToast('Бэкап сохранён 📤');}
 function resetData(){localStorage.removeItem('gym_v6');showToast('Данные удалены');setTimeout(function(){location.reload();},800);}
+function importData(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
+  inp.onchange=function(e){
+    var file=e.target.files[0];if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      try{
+        var data=JSON.parse(ev.target.result);
+        if(!data.logs&&!data.profile){showToast('Неверный формат файла','var(--r)');return;}
+        if(confirm('Заменить ВСЕ текущие данные данными из файла? Текущий прогресс будет перезаписан.')){
+          setD(data);showToast('Данные восстановлены ✅');setTimeout(function(){location.reload();},900);
+        }
+      }catch(err){showToast('Ошибка чтения файла','var(--r)');}
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+function daysSinceBackup(){var d=getD();if(!d.lastBackup)return 999;return Math.floor((Date.now()-new Date(d.lastBackup).getTime())/86400000);}
+function hasData(){var d=getD();return Object.keys(d.logs||{}).length>0;}
+
+// Plate calculator (Epley)
+function calcPlates(target,bar){
+  bar=bar||20;var plates=[25,20,15,10,5,2.5,1.25];var perSide=(target-bar)/2;
+  if(perSide<0)return null;var res=[];
+  plates.forEach(function(p){var c=Math.floor(perSide/p+0.001);if(c>0){res.push({w:p,n:c});perSide-=c*p;}});
+  return{perSide:res,rem:Math.round(perSide*100)/100};
+}
+function calc1RM(w,reps){if(!w||!reps)return 0;return Math.round(w*(1+reps/30));}
+
+// Mood / notes
+function saveMood(mood){
+  var d=getD();if(!d.notes)d.notes={};if(!d.notes[CU])d.notes[CU]={};
+  var t=today();if(!d.notes[CU][t])d.notes[CU][t]={};
+  d.notes[CU][t].mood=mood;setD(d);renderPlan();
+}
+function saveNote(){
+  var el=document.getElementById('todayNote');if(!el)return;
+  var d=getD();if(!d.notes)d.notes={};if(!d.notes[CU])d.notes[CU]={};
+  var t=today();if(!d.notes[CU][t])d.notes[CU][t]={};
+  d.notes[CU][t].text=el.value;setD(d);showToast('Заметка сохранена');
+}
+function getTodayNote(){var d=getD();var t=today();return(d.notes&&d.notes[CU]&&d.notes[CU][t])||{};}
+
+// Training days
+function toggleTrainDay(day){
+  var d=getD();if(!d.profile)d.profile={};if(!d.profile[CU])d.profile[CU]={};
+  var td=d.profile[CU].trainDays||[];
+  var idx=td.indexOf(day);
+  if(idx>=0)td.splice(idx,1);else td.push(day);
+  d.profile[CU].trainDays=td;setD(d);renderProf();
+}
+function getTrainDays(){var d=getD();return(d.profile&&d.profile[CU]&&d.profile[CU].trainDays)||[];}
+function isTrainingDay(){
+  var td=getTrainDays();if(!td.length)return null;
+  var dayMap=['SU','MO','TU','WE','TH','FR','SA'];
+  var todayCode=dayMap[new Date().getDay()];
+  return td.indexOf(todayCode)>=0;
+}
+
+// Onboarding
+function showOnboarding(){
+  var ov=document.getElementById('onboardOv');if(ov)ov.classList.add('show');
+}
+function setLevel(lvl){
+  var d=getD();d.level=lvl;d.onboarded=true;setD(d);
+  var ov=document.getElementById('onboardOv');if(ov)ov.classList.remove('show');
+  showToast(lvl==='beginner'?'Программа для новичка готова! 💪':'Программа с базой готова! 💪');
+  renderPlan();
+}
+function checkOnboarding(){var d=getD();if(!d.onboarded){showOnboarding();}}
 
 // ── NAVIGATION ─────────────────────────────────────────────────────────
 function switchUser(u){
@@ -1045,6 +1226,7 @@ function renderAll(){
 
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
 switchUser('him');
+checkOnboarding();
 </script>
 </body>
 </html>
